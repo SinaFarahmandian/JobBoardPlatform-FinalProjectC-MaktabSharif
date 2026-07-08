@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{8923EFF7-E53F-4C4D-B2F1-C59CB732ABF4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{F8D8C5AA-F4F0-48B6-A628-C9DD2ED4612C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{C989B6DD-FE1E-4944-AF9B-4336A63AFC30}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{27F736FD-4D5E-4F04-9217-F2DA54AE14D7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobBoardPlatform.WebApi", "JobBoardPlatform.WebApi\JobBoardPlatform.WebApi.csproj", "{B76FC333-B2D1-40E4-B908-1243A22E94D8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobBoardPlatform.Infrastructure", "JobBoardPlatform.Infrastructure\JobBoardPlatform.Infrastructure.csproj", "{5B40A35D-4998-4667-82C5-5109E59F7C49}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobBoardPlatform.Domain", "JobBoardPlatform.Domain\JobBoardPlatform.Domain.csproj", "{D3B3F689-1FD7-4631-8D38-70EA959135A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobBoardPlatform.Buisiness", "JobBoardPlatform.Buisiness\JobBoardPlatform.Buisiness.csproj", "{334A0E83-62BE-4048-AE62-E83859C58312}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B76FC333-B2D1-40E4-B908-1243A22E94D8} = {27F736FD-4D5E-4F04-9217-F2DA54AE14D7}
+		{5B40A35D-4998-4667-82C5-5109E59F7C49} = {C989B6DD-FE1E-4944-AF9B-4336A63AFC30}
+		{D3B3F689-1FD7-4631-8D38-70EA959135A7} = {8923EFF7-E53F-4C4D-B2F1-C59CB732ABF4}
+		{334A0E83-62BE-4048-AE62-E83859C58312} = {F8D8C5AA-F4F0-48B6-A628-C9DD2ED4612C}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B76FC333-B2D1-40E4-B908-1243A22E94D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B76FC333-B2D1-40E4-B908-1243A22E94D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B76FC333-B2D1-40E4-B908-1243A22E94D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B76FC333-B2D1-40E4-B908-1243A22E94D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B40A35D-4998-4667-82C5-5109E59F7C49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B40A35D-4998-4667-82C5-5109E59F7C49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B40A35D-4998-4667-82C5-5109E59F7C49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B40A35D-4998-4667-82C5-5109E59F7C49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3B3F689-1FD7-4631-8D38-70EA959135A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3B3F689-1FD7-4631-8D38-70EA959135A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3B3F689-1FD7-4631-8D38-70EA959135A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3B3F689-1FD7-4631-8D38-70EA959135A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{334A0E83-62BE-4048-AE62-E83859C58312}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{334A0E83-62BE-4048-AE62-E83859C58312}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{334A0E83-62BE-4048-AE62-E83859C58312}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{334A0E83-62BE-4048-AE62-E83859C58312}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
