@@ -1,6 +1,5 @@
 ﻿namespace JobBoardPlatform.Buisiness.Dtos.Auth;
 
-// RegisterJobSeekerDto.cs
 using System.ComponentModel.DataAnnotations;
 
 public class RegisterJobSeekerDto

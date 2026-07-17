@@ -15,8 +15,7 @@ public class Employer : User
 
     public Employer(string fullName, string email, int companyId) : base(fullName, email)
     {
-        Role = UserRole.Employer;
         CompanyId = companyId;
-        IsApproved = false; // باید توسط ادمین تأیید شود
+        IsApproved = false; 
     }
 }

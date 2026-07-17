@@ -5,7 +5,6 @@ using JobBoardPlatform.Domain.Entities.Companies;
 
 namespace JobBoardPlatform.Buisiness.Services;
 
-// CompanyService.cs
 public class CompanyService : ICompanyService
 {
     private readonly IEmployerRepository _employerRepository;

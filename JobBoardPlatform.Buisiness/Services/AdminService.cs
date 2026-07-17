@@ -4,7 +4,6 @@ using JobBoardPlatform.Buisiness.Interfaces;
 
 namespace JobBoardPlatform.Buisiness.Services;
 
-// AdminService.cs
 public class AdminService : IAdminService
 {
     private readonly IEmployerRepository _employerRepository;

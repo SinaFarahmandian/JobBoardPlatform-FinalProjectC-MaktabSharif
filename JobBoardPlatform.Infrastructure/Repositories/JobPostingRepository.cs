@@ -30,7 +30,7 @@ public class JobPostingRepository : IJobPostingRepository
 
     public async Task DeleteAsync(JobPosting posting)
     {
-        posting.IsDeleted = true; // Soft Delete
+        posting.IsDeleted = true; 
         _context.JobPostings.Update(posting);
         await _context.SaveChangesAsync();
     }

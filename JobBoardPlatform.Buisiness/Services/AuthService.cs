@@ -7,7 +7,6 @@ using JobBoardPlatform.Domain.Entities.JobSeekers;
 
 namespace JobBoardPlatform.Buisiness.Services;
 
-// AuthService.cs
 using Microsoft.AspNetCore.Identity;
 
 public class AuthService : IAuthService
@@ -37,11 +36,9 @@ public class AuthService : IAuthService
 
     public async Task<AuthResultDto> RegisterEmployerAsync(RegisterEmployerDto dto)
     {
-        // قدم ۱: شرکت اول ساخته می‌شود
         var company = new Company(dto.CompanyName, dto.CompanyWebsite, dto.CompanyDescription, dto.Industry);
         await _companyRepository.AddAsync(company);
 
-        // قدم ۲: کارفرما با CompanyId ساخته می‌شود
         var employer = new Employer(dto.FullName, dto.Email, company.Id) { PhoneNumber = dto.PhoneNumber };
         var result = await _userManager.CreateAsync(employer, dto.Password);
 
@@ -70,3 +67,31 @@ public class AuthService : IAuthService
         return AuthResultDto.SuccessWithToken(token, user.FullName, user.Email!, roles.FirstOrDefault() ?? "");
     }
 }
+
+// var claims = new List<Claim>
+// {
+//     new (JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+//     new (JwtRegisteredClaimNames.Email, user.Email.ToString()),
+//     new (JwtRegisteredClaimNames.Name, $"{user.FirstName} {user.LastName}"),
+// };
+//
+// var userClaims = await _userManager.GetClaimsAsync(user);
+// claims.AddRange(userClaims);
+//
+// var roles = await _userManager.GetRolesAsync(user);
+//
+// foreach (var roleName in roles)
+// {
+//     claims.Add(new Claim(ClaimTypes.Role, roleName));
+//
+//     var role = await _roleManager.FindByNameAsync(roleName);
+//
+//     if (role is null)
+//         continue;
+//
+//     var roleClaims = await _roleManager.GetClaimsAsync(role);
+//     claims.AddRange(roleClaims);
+// }
+//
+// // remove duplicate claims
+// claims = claims.DistinctBy(c => (c.Type, c.Value)).ToList();

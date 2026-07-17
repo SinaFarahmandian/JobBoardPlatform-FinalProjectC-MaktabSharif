@@ -5,7 +5,6 @@ using JobBoardPlatform.Domain.Entities.JobPostings;
 
 namespace JobBoardPlatform.Buisiness.Services;
 
-// JobPostingService.cs
 public class JobPostingService : IJobPostingService
 {
     private readonly IJobPostingRepository _repo;
@@ -66,7 +65,6 @@ public class JobPostingService : IJobPostingService
         return MapToDto(posting);
     }
 
-    // این متد هم NotFound هم Ownership رو چک می‌کند — نقطه‌ی کلیدی امنیت این فاز
     private async Task<JobPosting> GetOwnedAsync(int employerId, int jobPostingId)
     {
         var posting = await _repo.GetByIdAsync(jobPostingId)

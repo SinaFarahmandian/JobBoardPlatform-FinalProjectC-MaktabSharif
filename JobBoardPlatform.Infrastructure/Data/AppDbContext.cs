@@ -21,7 +21,7 @@ public class AppDbContext : IdentityDbContext<User, IdentityRole<int>, int>
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(modelBuilder); // جدول‌های Identity رو می‌سازه
+        base.OnModelCreating(modelBuilder); 
 
         modelBuilder.Entity<User>()
             .HasDiscriminator<string>("UserType")

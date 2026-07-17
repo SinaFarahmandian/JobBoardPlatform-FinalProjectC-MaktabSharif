@@ -3,7 +3,6 @@ using JobBoardPlatform.Domain.Enums;
 
 namespace JobBoardPlatform.Domain.Entities.JobSeekers;
 
-// JobSeeker.cs
 public class JobSeeker : User
 {
     public string? ResumeUrl { get; set; }
@@ -17,6 +16,5 @@ public class JobSeeker : User
 
     public JobSeeker(string fullName, string email) : base(fullName, email)
     {
-        Role = UserRole.JobSeeker;
     }
 }

@@ -1,6 +1,5 @@
 ﻿namespace JobBoardPlatform.Buisiness.Dtos.Auth;
 
-// AuthResultDto.cs
 public class AuthResultDto
 {
     public bool Succeeded { get; set; }

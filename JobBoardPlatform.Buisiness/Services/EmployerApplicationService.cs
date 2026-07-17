@@ -6,13 +6,11 @@ using JobBoardPlatform.Domain.Enums;
 
 namespace JobBoardPlatform.Buisiness.Services;
 
-// EmployerApplicationService.cs
 public class EmployerApplicationService : IEmployerApplicationService
 {
     private readonly IJobApplicationRepository _appRepo;
     private readonly IJobPostingRepository _postingRepo;
 
-    // State machine مطابق جدول سند فاز ۲
     private static readonly Dictionary<ApplicationStatus, ApplicationStatus[]> AllowedTransitions = new()
     {
         [ApplicationStatus.Pending] = new[] { ApplicationStatus.Reviewing },
