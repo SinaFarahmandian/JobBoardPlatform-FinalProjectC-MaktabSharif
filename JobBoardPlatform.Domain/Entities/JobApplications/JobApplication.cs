@@ -13,7 +13,7 @@ public class JobApplication : BaseEntity
     public int JobSeekerId { get; set; }
     public JobSeeker JobSeeker { get; set; } = null!;
 
-    public ApplicationStatus Status { get; set; } = ApplicationStatus.Submitted;
+    public ApplicationStatus Status { get; set; } = ApplicationStatus.Pending;
 
     [StringLength(3000)]
     public string? CoverLetter { get; set; }
@@ -34,6 +34,6 @@ public class JobApplication : BaseEntity
         JobPostingId = jobPostingId;
         JobSeekerId = jobSeekerId;
         CoverLetter = coverLetter;
-        Status = ApplicationStatus.Submitted;
+        Status = ApplicationStatus.Pending;
     }
 }

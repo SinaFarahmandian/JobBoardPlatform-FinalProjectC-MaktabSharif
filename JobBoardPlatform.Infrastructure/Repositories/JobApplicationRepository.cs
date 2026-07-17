@@ -1,0 +1,30 @@
+﻿using JobBoardPlatform.Buisiness.Interfaces;
+using JobBoardPlatform.Domain.Entities.JobApplications;
+using JobBoardPlatform.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+
+namespace JobBoardPlatform.Infrastructure.Repositories;
+
+public class JobApplicationRepository : IJobApplicationRepository
+{
+    private readonly AppDbContext _context;
+    public JobApplicationRepository(AppDbContext context) => _context = context;
+
+    public async Task<JobApplication?> GetByIdAsync(int id) =>
+        await _context.JobApplications
+            .Include(ja => ja.JobPosting)
+            .Include(ja => ja.JobSeeker)
+            .FirstOrDefaultAsync(ja => ja.Id == id);
+
+    public async Task<List<JobApplication>> GetByJobPostingIdAsync(int jobPostingId) =>
+        await _context.JobApplications
+            .Include(ja => ja.JobSeeker)
+            .Where(ja => ja.JobPostingId == jobPostingId)
+            .ToListAsync();
+
+    public async Task UpdateAsync(JobApplication application)
+    {
+        _context.JobApplications.Update(application);
+        await _context.SaveChangesAsync();
+    }
+}

@@ -2,9 +2,9 @@
 
 public enum ApplicationStatus
 {
-    Submitted = 1,      
-    UnderReview = 2,    
-    InterviewStage = 3, 
-    Accepted = 4,       
-    Rejected = 5        
+    Pending = 1,
+    Reviewing = 2,
+    Interview = 3,
+    Accepted = 4,
+    Rejected = 5
 }

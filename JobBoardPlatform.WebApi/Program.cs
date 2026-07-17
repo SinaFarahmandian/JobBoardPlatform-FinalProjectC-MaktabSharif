@@ -1,51 +1,105 @@
+using System.Text;
+using JobBoardPlatform.Buisiness.Interfaces;
+using JobBoardPlatform.Buisiness.Services;
+using JobBoardPlatform.Domain.Entities;
+using JobBoardPlatform.Domain.Entities.Admins;
 using JobBoardPlatform.Infrastructure.Data;
+using JobBoardPlatform.Infrastructure.Repositories;
+using JobBoardPlatform.Infrastructure.Services;
+using JobBoardPlatform.WebApi.MiddleWare;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using JobBoardPlatform.WebApi;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
+    {
+        options.Password.RequiredLength = 8;
+        options.Password.RequireNonAlphanumeric = false;
+        options.User.RequireUniqueEmail = true;
+    })
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
+
+var jwtSettings = builder.Configuration.GetSection("Jwt");
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtSettings["Issuer"],
+            ValidAudience = jwtSettings["Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]!))
+        };
+    });
+
+builder.Services.AddAuthorization();
+
+// Repositories
+builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
+builder.Services.AddScoped<IEmployerRepository, EmployerRepository>();
+builder.Services.AddScoped<IJobPostingRepository, JobPostingRepository>();
+builder.Services.AddScoped<IJobApplicationRepository, JobApplicationRepository>();
+
+// Services
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ICompanyService, CompanyService>();
+builder.Services.AddScoped<IJobPostingService, JobPostingService>();
+builder.Services.AddScoped<IEmployerApplicationService, EmployerApplicationService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// Seed کردن Roleها و اکانت Admin
+using (var scope = app.Services.CreateScope())
 {
-    app.MapOpenApi();
-}
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+    var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
 
-app.UseHttpsRedirection();
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
+    foreach (var role in new[] { "JobSeeker", "Employer", "Admin" })
     {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast");
+        if (!await roleManager.RoleExistsAsync(role))
+            await roleManager.CreateAsync(new IdentityRole<int>(role));
+    }
 
-app.Run();
-
-namespace JobBoardPlatform.WebApi
-{
-    record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+    var adminEmail = config["AdminSeed:Email"]!;
+    if (await userManager.FindByEmailAsync(adminEmail) == null)
     {
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+        var admin = new Admin(config["AdminSeed:FullName"] ?? "System Admin", adminEmail);
+        var result = await userManager.CreateAsync(admin, config["AdminSeed:Password"]!);
+        if (result.Succeeded)
+            await userManager.AddToRoleAsync(admin, "Admin");
     }
 }
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
+app.Run();

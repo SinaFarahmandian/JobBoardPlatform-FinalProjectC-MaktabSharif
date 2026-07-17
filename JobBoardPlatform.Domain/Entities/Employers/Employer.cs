@@ -1,15 +1,22 @@
-﻿using JobBoardPlatform.Domain.Entities.JobPostings;
+﻿using JobBoardPlatform.Domain.Entities.Companies;
+using JobBoardPlatform.Domain.Entities.JobPostings;
 using JobBoardPlatform.Domain.Enums;
 
 namespace JobBoardPlatform.Domain.Entities.Employers;
 
 public class Employer : User
 {
-    public Employer() => Role = UserRole.Employer;
+    public int CompanyId { get; set; }
+    public Company Company { get; set; } = null!;
 
-    public string CompanyName { get; set; } = string.Empty;
-    public string? CompanyWebsite { get; set; }
-    public string? CompanyDescription { get; set; }
+    public ICollection<JobPosting> JobPostings { get; set; } = new List<JobPosting>();
 
-    public List<JobPosting> JobPostings { get; set; } = new();
+    private Employer() { }
+
+    public Employer(string fullName, string email, int companyId) : base(fullName, email)
+    {
+        Role = UserRole.Employer;
+        CompanyId = companyId;
+        IsApproved = false; // باید توسط ادمین تأیید شود
+    }
 }
