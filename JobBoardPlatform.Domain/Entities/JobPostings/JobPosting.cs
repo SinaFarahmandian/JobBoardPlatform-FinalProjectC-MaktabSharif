@@ -26,6 +26,12 @@ public class JobPosting : BaseEntity
 
     [Required, StringLength(50)]
     public string EmploymentType { get; set; } = "FullTime";
+    
+    [StringLength(100)]
+    public string? Category { get; set; }
+
+    [StringLength(500)]
+    public string? Skills { get; set; }
 
     public DateTime? ExpiresAt { get; set; }
 

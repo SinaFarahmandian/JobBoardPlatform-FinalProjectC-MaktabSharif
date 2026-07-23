@@ -6,6 +6,7 @@ using JobBoardPlatform.Domain.Entities.Admins;
 using JobBoardPlatform.Infrastructure.Data;
 using JobBoardPlatform.Infrastructure.Repositories;
 using JobBoardPlatform.Infrastructure.Services;
+using JobBoardPlatform.WebApi.Filters;
 using JobBoardPlatform.WebApi.MiddleWare;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -15,7 +16,7 @@ using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options => { options.Filters.Add<ApiResponseWrapperFilter>(); });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(opt =>
 {
@@ -71,15 +72,20 @@ builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
 builder.Services.AddScoped<IEmployerRepository, EmployerRepository>();
 builder.Services.AddScoped<IJobPostingRepository, JobPostingRepository>();
 builder.Services.AddScoped<IJobApplicationRepository, JobApplicationRepository>();
+builder.Services.AddScoped<IJobSeekerRepository, JobSeekerRepository>();
+builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddScoped<IJobPostingService, JobPostingService>();
 builder.Services.AddScoped<IEmployerApplicationService, EmployerApplicationService>();
+builder.Services.AddScoped<IJobSeekerProfileService, JobSeekerProfileService>();
+builder.Services.AddScoped<IPublicJobPostingService, PublicJobPostingService>();
+builder.Services.AddScoped<IJobSeekerApplicationService, JobSeekerApplicationService>();
+builder.Services.AddScoped<IFileStorageService, LocalFileStorageService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
-
 
 
 var app = builder.Build();

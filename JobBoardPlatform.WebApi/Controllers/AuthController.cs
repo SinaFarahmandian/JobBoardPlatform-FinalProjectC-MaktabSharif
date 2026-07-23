@@ -30,6 +30,21 @@ public class AuthController : ControllerBase
     {
         var result = await _authService.LoginAsync(dto);
         if (!result.Succeeded) return Unauthorized(new { errors = result.Errors });
-        return Ok(new { token = result.Token, fullName = result.FullName, email = result.Email, role = result.Role });
+        return Ok(new { token = result.Token, refreshToken = result.RefreshToken, fullName = result.FullName, email = result.Email, role = result.Role });
+    }
+
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Refresh(RefreshTokenRequestDto dto)
+    {
+        var result = await _authService.RefreshTokenAsync(dto.RefreshToken);
+        if (!result.Succeeded) return Unauthorized(new { errors = result.Errors });
+        return Ok(new { token = result.Token, refreshToken = result.RefreshToken });
+    }
+
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout(RefreshTokenRequestDto dto)
+    {
+        await _authService.LogoutAsync(dto.RefreshToken);
+        return Ok(new { message = "خروج با موفقیت انجام شد" });
     }
 }

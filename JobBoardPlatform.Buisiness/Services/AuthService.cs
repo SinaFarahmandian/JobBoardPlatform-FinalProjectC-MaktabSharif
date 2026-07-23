@@ -1,6 +1,9 @@
-﻿using JobBoardPlatform.Buisiness.Dtos.Auth;
+﻿using System.Security.Cryptography;
+using JobBoardPlatform.Buisiness.Common.Exceptions;
+using JobBoardPlatform.Buisiness.Dtos.Auth;
 using JobBoardPlatform.Buisiness.Interfaces;
 using JobBoardPlatform.Domain.Entities;
+using JobBoardPlatform.Domain.Entities.Auth;
 using JobBoardPlatform.Domain.Entities.Companies;
 using JobBoardPlatform.Domain.Entities.Employers;
 using JobBoardPlatform.Domain.Entities.JobSeekers;
@@ -14,12 +17,16 @@ public class AuthService : IAuthService
     private readonly UserManager<User> _userManager;
     private readonly ICompanyRepository _companyRepository;
     private readonly IJwtTokenService _jwtTokenService;
+    private readonly IRefreshTokenRepository _refreshTokenRepository;
 
-    public AuthService(UserManager<User> userManager, ICompanyRepository companyRepository, IJwtTokenService jwtTokenService)
+    private const int RefreshTokenExpiryDays = 30;
+
+    public AuthService(UserManager<User> userManager, ICompanyRepository companyRepository, IJwtTokenService jwtTokenService, IRefreshTokenRepository refreshTokenRepository)
     {
         _userManager = userManager;
         _companyRepository = companyRepository;
         _jwtTokenService = jwtTokenService;
+        _refreshTokenRepository = refreshTokenRepository;
     }
 
     public async Task<AuthResultDto> RegisterJobSeekerAsync(RegisterJobSeekerDto dto)
@@ -62,9 +69,49 @@ public class AuthService : IAuthService
             return AuthResultDto.Failure(new[] { "حساب کارفرمایی شما هنوز توسط ادمین تأیید نشده است" });
 
         var roles = await _userManager.GetRolesAsync(user);
-        var token = _jwtTokenService.GenerateToken(user, roles);
+        var accessToken = _jwtTokenService.GenerateToken(user, roles);
+        var refreshToken = await GenerateAndStoreRefreshTokenAsync(user.Id);
 
-        return AuthResultDto.SuccessWithToken(token, user.FullName, user.Email!, roles.FirstOrDefault() ?? "");
+        return AuthResultDto.SuccessWithToken(accessToken, refreshToken, user.FullName, user.Email!, roles.FirstOrDefault() ?? "");
+    }
+
+    public async Task<AuthResultDto> RefreshTokenAsync(string refreshToken)
+    {
+        var storedToken = await _refreshTokenRepository.GetByTokenAsync(refreshToken);
+
+        if (storedToken == null || !storedToken.IsActive)
+            return AuthResultDto.Failure(new[] { "Refresh Token نامعتبر یا منقضی‌شده است" });
+
+        var user = await _userManager.FindByIdAsync(storedToken.UserId.ToString())
+            ?? throw new NotFoundException("کاربر پیدا نشد");
+
+        // توکن قدیمی باطل می‌شه (Rotation) و یکی جدید صادر می‌شه
+        storedToken.Revoke();
+        await _refreshTokenRepository.UpdateAsync(storedToken);
+
+        var roles = await _userManager.GetRolesAsync(user);
+        var newAccessToken = _jwtTokenService.GenerateToken(user, roles);
+        var newRefreshToken = await GenerateAndStoreRefreshTokenAsync(user.Id);
+
+        return AuthResultDto.SuccessWithToken(newAccessToken, newRefreshToken, user.FullName, user.Email!, roles.FirstOrDefault() ?? "");
+    }
+
+    public async Task LogoutAsync(string refreshToken)
+    {
+        var storedToken = await _refreshTokenRepository.GetByTokenAsync(refreshToken);
+        if (storedToken != null && storedToken.IsActive)
+        {
+            storedToken.Revoke();
+            await _refreshTokenRepository.UpdateAsync(storedToken);
+        }
+    }
+
+    private async Task<string> GenerateAndStoreRefreshTokenAsync(int userId)
+    {
+        var tokenValue = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        var refreshToken = new RefreshToken(userId, tokenValue, DateTime.UtcNow.AddDays(RefreshTokenExpiryDays));
+        await _refreshTokenRepository.AddAsync(refreshToken);
+        return tokenValue;
     }
 }
 

@@ -1,28 +1,46 @@
-﻿using JobBoardPlatform.Buisiness.Common.Exceptions;
+﻿using System.Text.Json;
+using JobBoardPlatform.Buisiness.Common;
+using JobBoardPlatform.Buisiness.Common.Exceptions;
 
 namespace JobBoardPlatform.WebApi.MiddleWare;
-
-using System.Text.Json;
 
 public class ExceptionHandlingMiddleware
 {
     private readonly RequestDelegate _next;
-    public ExceptionHandlingMiddleware(RequestDelegate next) => _next = next;
+    private readonly ILogger<ExceptionHandlingMiddleware> _logger;
+
+    public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
+    {
+        _next = next;
+        _logger = logger;
+    }
 
     public async Task InvokeAsync(HttpContext context)
     {
-        try { await _next(context); }
-        catch (NotFoundException ex) { await Write(context, 404, ex.Message); }
-        catch (ForbiddenAccessException ex) { await Write(context, 403, ex.Message); }
-        catch (InvalidStatusTransitionException ex) { await Write(context, 400, ex.Message); }
-        catch (ArgumentException ex) { await Write(context, 400, ex.Message); }
-        catch (Exception) { await Write(context, 500, "خطای غیرمنتظره‌ای رخ داد"); }
-    }
+        try
+        {
+            await _next(context);
+        }
+        catch (Exception ex)
+        {
+            var (status, message) = ex switch
+            {
+                NotFoundException => (StatusCodes.Status404NotFound, ex.Message),
+                ForbiddenAccessException => (StatusCodes.Status403Forbidden, ex.Message),
+                BadRequestException => (StatusCodes.Status400BadRequest, ex.Message),
+                InvalidStatusTransitionException => (StatusCodes.Status400BadRequest, ex.Message),
+                ArgumentException => (StatusCodes.Status400BadRequest, ex.Message),
+                _ => (StatusCodes.Status500InternalServerError, "خطای غیرمنتظره‌ای رخ داد")
+            };
 
-    private static async Task Write(HttpContext context, int status, string message)
-    {
-        context.Response.StatusCode = status;
-        context.Response.ContentType = "application/json";
-        await context.Response.WriteAsync(JsonSerializer.Serialize(new { error = message }));
+            if (status == StatusCodes.Status500InternalServerError)
+                _logger.LogError(ex, "Unhandled exception");
+
+            context.Response.StatusCode = status;
+            context.Response.ContentType = "application/json";
+
+            var response = ApiResponse<object>.FailureResponse(message);
+            await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+        }
     }
 }

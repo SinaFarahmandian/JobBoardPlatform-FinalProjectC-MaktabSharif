@@ -1,5 +1,6 @@
 ﻿using JobBoardPlatform.Domain.Entities;
 using JobBoardPlatform.Domain.Entities.Admins;
+using JobBoardPlatform.Domain.Entities.Auth;
 using JobBoardPlatform.Domain.Entities.Companies;
 using JobBoardPlatform.Domain.Entities.Employers;
 using JobBoardPlatform.Domain.Entities.JobApplications;
@@ -18,6 +19,7 @@ public class AppDbContext : IdentityDbContext<User, IdentityRole<int>, int>
     public DbSet<Company> Companies => Set<Company>();
     public DbSet<JobPosting> JobPostings => Set<JobPosting>();
     public DbSet<JobApplication> JobApplications => Set<JobApplication>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -52,6 +54,14 @@ public class AppDbContext : IdentityDbContext<User, IdentityRole<int>, int>
             .WithMany(js => js.Applications)
             .HasForeignKey(ja => ja.JobSeekerId)
             .OnDelete(DeleteBehavior.Restrict);
+        
+        modelBuilder.Entity<RefreshToken>()
+            .HasOne(rt => rt.User)
+            .WithMany()
+            .HasForeignKey(rt => rt.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<RefreshToken>().HasIndex(rt => rt.Token).IsUnique();
 
         modelBuilder.Entity<User>().HasQueryFilter(u => !u.IsDeleted);
         modelBuilder.Entity<JobPosting>().HasQueryFilter(jp => !jp.IsDeleted);

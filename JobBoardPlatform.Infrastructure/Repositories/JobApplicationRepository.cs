@@ -22,6 +22,22 @@ public class JobApplicationRepository : IJobApplicationRepository
             .Where(ja => ja.JobPostingId == jobPostingId)
             .ToListAsync();
 
+    public async Task<List<JobApplication>> GetByJobSeekerIdAsync(int jobSeekerId) =>
+        await _context.JobApplications
+            .Include(ja => ja.JobPosting).ThenInclude(jp => jp.Employer).ThenInclude(e => e.Company)
+            .Where(ja => ja.JobSeekerId == jobSeekerId)
+            .OrderByDescending(ja => ja.CreatedAt)
+            .ToListAsync();
+
+    public async Task<bool> ExistsAsync(int jobSeekerId, int jobPostingId) =>
+        await _context.JobApplications.AnyAsync(ja => ja.JobSeekerId == jobSeekerId && ja.JobPostingId == jobPostingId);
+
+    public async Task AddAsync(JobApplication application)
+    {
+        await _context.JobApplications.AddAsync(application);
+        await _context.SaveChangesAsync();
+    }
+    
     public async Task UpdateAsync(JobApplication application)
     {
         _context.JobApplications.Update(application);

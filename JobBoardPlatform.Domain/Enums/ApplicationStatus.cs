@@ -6,5 +6,6 @@ public enum ApplicationStatus
     Reviewing = 2,
     Interview = 3,
     Accepted = 4,
-    Rejected = 5
+    Rejected = 5,
+    Cancelled = 6
 }
