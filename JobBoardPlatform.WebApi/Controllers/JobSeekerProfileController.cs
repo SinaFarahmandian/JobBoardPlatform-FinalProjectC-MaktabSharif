@@ -22,6 +22,13 @@ public class JobSeekerProfileController : JobSeekerControllerBase
     public async Task<IActionResult> UploadResume(IFormFile file)
         => Ok(await _service.UploadResumeAsync(GetJobSeekerId(), file));
 
+    [HttpGet("resume")]
+    public async Task<IActionResult> DownloadResume()
+    {
+        var (data, contentType, fileName) = await _service.GetResumeAsync(GetJobSeekerId());
+        return File(data, contentType, fileName);
+    }
+
     [HttpDelete("resume")]
     public async Task<IActionResult> DeleteResume()
         => Ok(await _service.DeleteResumeAsync(GetJobSeekerId()));

@@ -83,7 +83,6 @@ builder.Services.AddScoped<IEmployerApplicationService, EmployerApplicationServi
 builder.Services.AddScoped<IJobSeekerProfileService, JobSeekerProfileService>();
 builder.Services.AddScoped<IPublicJobPostingService, PublicJobPostingService>();
 builder.Services.AddScoped<IJobSeekerApplicationService, JobSeekerApplicationService>();
-builder.Services.AddScoped<IFileStorageService, LocalFileStorageService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 
@@ -95,6 +94,7 @@ using (var scope = app.Services.CreateScope())
 {
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
 
     foreach (var role in new[] { "JobSeeker", "Employer", "Admin" })
@@ -111,12 +111,18 @@ using (var scope = app.Services.CreateScope())
         if (result.Succeeded)
             await userManager.AddToRoleAsync(admin, "Admin");
     }
+    
+    if (app.Environment.IsDevelopment())
+    {
+        await DataSeeder.SeedFakeDataAsync(context, userManager);
+    }
 }
 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    
 }
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();

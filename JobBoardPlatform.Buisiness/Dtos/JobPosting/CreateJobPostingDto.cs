@@ -23,6 +23,12 @@ public class CreateJobPostingDto
     public string EmploymentType { get; set; } = "FullTime";
 
     public DateTime? ExpiresAt { get; set; }
+    
+    [StringLength(100)]
+    public string? Category { get; set; }
+
+    [StringLength(500)]
+    public string? Skills { get; set; }
 }
 
 

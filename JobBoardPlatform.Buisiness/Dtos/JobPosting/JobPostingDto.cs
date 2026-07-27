@@ -13,4 +13,6 @@ public class JobPostingDto
     public bool IsFeatured { get; set; }
     public bool IsActive { get; set; }
     public DateTime CreatedAt { get; set; }
+    public string? Category { get; set; }
+    public string? Skills { get; set; }
 }

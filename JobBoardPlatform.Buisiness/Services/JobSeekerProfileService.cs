@@ -8,15 +8,13 @@ namespace JobBoardPlatform.Buisiness.Services;
 public class JobSeekerProfileService : IJobSeekerProfileService
 {
     private readonly IJobSeekerRepository _repo;
-    private readonly IFileStorageService _fileStorage;
 
     private static readonly string[] AllowedExtensions = { ".pdf" };
     private const long MaxFileSizeBytes = 5 * 1024 * 1024; 
 
-    public JobSeekerProfileService(IJobSeekerRepository repo, IFileStorageService fileStorage)
+    public JobSeekerProfileService(IJobSeekerRepository repo)
     {
         _repo = repo;
-        _fileStorage = fileStorage;
     }
 
     public async Task<JobSeekerProfileDto> GetMyProfileAsync(int jobSeekerId)
@@ -51,14 +49,14 @@ public class JobSeekerProfileService : IJobSeekerProfileService
 
         var seeker = await GetOwnedAsync(jobSeekerId);
 
-        if (!string.IsNullOrEmpty(seeker.ResumeUrl))
-            _fileStorage.DeleteResume(seeker.ResumeUrl);
+        using var memoryStream = new MemoryStream();
+        await file.CopyToAsync(memoryStream);
 
-        await using var stream = file.OpenReadStream();
-        var storedPath = await _fileStorage.SaveResumeAsync(jobSeekerId, stream, file.FileName);
-
-        seeker.ResumeUrl = storedPath;
+        seeker.ResumeData = memoryStream.ToArray();
+        seeker.ResumeFileName = file.FileName;
+        seeker.ResumeContentType = file.ContentType;
         seeker.UpdatedAt = DateTime.UtcNow;
+
         await _repo.UpdateAsync(seeker);
 
         return MapToDto(seeker);
@@ -68,15 +66,23 @@ public class JobSeekerProfileService : IJobSeekerProfileService
     {
         var seeker = await GetOwnedAsync(jobSeekerId);
 
-        if (!string.IsNullOrEmpty(seeker.ResumeUrl))
-        {
-            _fileStorage.DeleteResume(seeker.ResumeUrl);
-            seeker.ResumeUrl = null;
-            seeker.UpdatedAt = DateTime.UtcNow;
-            await _repo.UpdateAsync(seeker);
-        }
+        seeker.ResumeData = null;
+        seeker.ResumeFileName = null;
+        seeker.ResumeContentType = null;
+        seeker.UpdatedAt = DateTime.UtcNow;
+        await _repo.UpdateAsync(seeker);
 
         return MapToDto(seeker);
+    }
+    
+    public async Task<(byte[] Data, string ContentType, string FileName)> GetResumeAsync(int jobSeekerId)
+    {
+        var seeker = await GetOwnedAsync(jobSeekerId);
+
+        if (seeker.ResumeData == null)
+            throw new NotFoundException("رزومه‌ای برای این کارجو ثبت نشده است");
+
+        return (seeker.ResumeData, seeker.ResumeContentType!, seeker.ResumeFileName!);
     }
 
     private async Task<Domain.Entities.JobSeekers.JobSeeker> GetOwnedAsync(int jobSeekerId)
@@ -85,7 +91,7 @@ public class JobSeekerProfileService : IJobSeekerProfileService
     private static JobSeekerProfileDto MapToDto(Domain.Entities.JobSeekers.JobSeeker s) => new()
     {
         Id = s.Id, FullName = s.FullName, Email = s.Email!, PhoneNumber = s.PhoneNumber,
-        ResumeUrl = s.ResumeUrl, Skills = s.Skills, YearsOfExperience = s.YearsOfExperience,
-        DesiredJobTitle = s.DesiredJobTitle
+        HasResume = s.ResumeData != null, ResumeFileName = s.ResumeFileName,
+        Skills = s.Skills, YearsOfExperience = s.YearsOfExperience, DesiredJobTitle = s.DesiredJobTitle
     };
 }

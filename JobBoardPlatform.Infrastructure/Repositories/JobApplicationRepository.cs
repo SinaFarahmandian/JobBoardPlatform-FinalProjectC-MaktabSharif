@@ -12,7 +12,7 @@ public class JobApplicationRepository : IJobApplicationRepository
 
     public async Task<JobApplication?> GetByIdAsync(int id) =>
         await _context.JobApplications
-            .Include(ja => ja.JobPosting)
+            .Include(ja => ja.JobPosting).ThenInclude(jp => jp.Employer).ThenInclude(e => e.Company)
             .Include(ja => ja.JobSeeker)
             .FirstOrDefaultAsync(ja => ja.Id == id);
 

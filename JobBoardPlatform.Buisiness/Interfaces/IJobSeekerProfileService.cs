@@ -9,4 +9,6 @@ public interface IJobSeekerProfileService
     Task<JobSeekerProfileDto> UpdateMyProfileAsync(int jobSeekerId, UpdateJobSeekerProfileDto dto);
     Task<JobSeekerProfileDto> UploadResumeAsync(int jobSeekerId, IFormFile file);
     Task<JobSeekerProfileDto> DeleteResumeAsync(int jobSeekerId);
+    Task<(byte[] Data, string ContentType, string FileName)> GetResumeAsync(int jobSeekerId);
+
 }

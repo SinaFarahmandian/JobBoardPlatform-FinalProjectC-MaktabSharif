@@ -17,7 +17,9 @@ public class JobPostingService : IJobPostingService
         {
             SalaryMin = dto.SalaryMin,
             SalaryMax = dto.SalaryMax,
-            ExpiresAt = dto.ExpiresAt
+            ExpiresAt = dto.ExpiresAt,
+            Category = dto.Category,
+            Skills = dto.Skills
         };
 
         await _repo.AddAsync(posting);
@@ -36,6 +38,8 @@ public class JobPostingService : IJobPostingService
         posting.EmploymentType = dto.EmploymentType;
         posting.ExpiresAt = dto.ExpiresAt;
         posting.UpdatedAt = DateTime.UtcNow;
+        posting.Category = dto.Category;
+        posting.Skills = dto.Skills;
 
         await _repo.UpdateAsync(posting);
         return MapToDto(posting);
@@ -80,6 +84,7 @@ public class JobPostingService : IJobPostingService
     {
         Id = p.Id, Title = p.Title, Description = p.Description, Location = p.Location,
         SalaryMin = p.SalaryMin, SalaryMax = p.SalaryMax, EmploymentType = p.EmploymentType,
-        ExpiresAt = p.ExpiresAt, IsFeatured = p.IsFeatured, IsActive = p.IsActive, CreatedAt = p.CreatedAt
+        ExpiresAt = p.ExpiresAt, IsFeatured = p.IsFeatured, IsActive = p.IsActive, CreatedAt = p.CreatedAt,
+        Category = p.Category, Skills = p.Skills
     };
 }

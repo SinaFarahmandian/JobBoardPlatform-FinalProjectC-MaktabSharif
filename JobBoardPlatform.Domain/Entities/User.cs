@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
-using JobBoardPlatform.Domain.Enums;
 
 namespace JobBoardPlatform.Domain.Entities;
 
