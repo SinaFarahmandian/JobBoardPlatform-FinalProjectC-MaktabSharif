@@ -10,11 +10,13 @@ public class JobSeekerApplicationService : IJobSeekerApplicationService
 {
     private readonly IJobApplicationRepository _appRepo;
     private readonly IJobPostingRepository _postingRepo;
+    private readonly IEmailNotificationService _emailNotifier;
 
-    public JobSeekerApplicationService(IJobApplicationRepository appRepo, IJobPostingRepository postingRepo)
+    public JobSeekerApplicationService(IJobApplicationRepository appRepo, IJobPostingRepository postingRepo, IEmailNotificationService emailNotifier)
     {
         _appRepo = appRepo;
         _postingRepo = postingRepo;
+        _emailNotifier = emailNotifier;
     }
 
     public async Task<JobSeekerApplicationDto> ApplyAsync(int jobSeekerId, CreateJobApplicationDto dto)
@@ -30,6 +32,12 @@ public class JobSeekerApplicationService : IJobSeekerApplicationService
 
         var application = new JobApplication(dto.JobPostingId, jobSeekerId, dto.CoverLetter);
         await _appRepo.AddAsync(application);
+        
+        await _emailNotifier.SendAsync("NewApplicationReceived", posting.Employer.Email!, new Dictionary<string, string>
+        {
+            ["EmployerName"] = posting.Employer.FullName,
+            ["JobTitle"] = posting.Title
+        });
 
         return await GetDetailsAsync(jobSeekerId, application.Id);
     }

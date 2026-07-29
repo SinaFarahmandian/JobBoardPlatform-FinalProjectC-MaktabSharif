@@ -8,7 +8,11 @@ namespace JobBoardPlatform.Infrastructure.Repositories;
 public class EmployerRepository : IEmployerRepository
 {
     private readonly AppDbContext _context;
+    
     public EmployerRepository(AppDbContext context) => _context = context;
+    
+    public async Task<List<Employer>> GetAllAsync() =>
+        await _context.Set<Employer>().Include(e => e.Company).ToListAsync();
 
     public async Task<Employer?> GetByIdAsync(int id) => await _context.Set<Employer>().FindAsync(id);
 

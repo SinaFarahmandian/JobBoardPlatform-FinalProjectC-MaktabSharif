@@ -10,6 +10,12 @@ public class JobPostingRepository : IJobPostingRepository
 {
     private readonly AppDbContext _context;
     public JobPostingRepository(AppDbContext context) => _context = context;
+    
+    public async Task<List<JobPosting>> GetAllForAdminAsync() =>
+        await _context.JobPostings
+            .Include(jp => jp.Employer).ThenInclude(e => e.Company)
+            .OrderByDescending(jp => jp.CreatedAt)
+            .ToListAsync();
 
     public async Task<JobPosting?> GetByIdAsync(int id) =>
         await _context.JobPostings.Include(jp => jp.Employer).FirstOrDefaultAsync(jp => jp.Id == id);
@@ -48,7 +54,8 @@ public class JobPostingRepository : IJobPostingRepository
         var totalCount = await q.CountAsync();
 
         var items = await q
-            .OrderByDescending(jp => jp.IsFeatured).ThenByDescending(jp => jp.CreatedAt)
+            .OrderByDescending(jp => jp.IsFeatured && (jp.FeaturedUntil == null || jp.FeaturedUntil > DateTime.UtcNow))
+            .ThenByDescending(jp => jp.CreatedAt)
             .Skip((query.Page - 1) * query.PageSize)
             .Take(query.PageSize)
             .ToListAsync();

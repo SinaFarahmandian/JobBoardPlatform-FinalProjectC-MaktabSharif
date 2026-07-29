@@ -10,6 +10,7 @@ public class EmployerApplicationService : IEmployerApplicationService
 {
     private readonly IJobApplicationRepository _appRepo;
     private readonly IJobPostingRepository _postingRepo;
+    private readonly IEmailNotificationService _emailNotifier;
 
     private static readonly Dictionary<ApplicationStatus, ApplicationStatus[]> AllowedTransitions = new()
     {
@@ -18,10 +19,11 @@ public class EmployerApplicationService : IEmployerApplicationService
         [ApplicationStatus.Interview] = new[] { ApplicationStatus.Accepted, ApplicationStatus.Rejected },
     };
 
-    public EmployerApplicationService(IJobApplicationRepository appRepo, IJobPostingRepository postingRepo)
+    public EmployerApplicationService(IJobApplicationRepository appRepo, IJobPostingRepository postingRepo, IEmailNotificationService emailNotifier)
     {
         _appRepo = appRepo;
         _postingRepo = postingRepo;
+        _emailNotifier = emailNotifier;
     }
 
     public async Task<List<JobApplicationDto>> GetApplicationsForJobPostingAsync(int employerId, int jobPostingId)
@@ -44,6 +46,25 @@ public class EmployerApplicationService : IEmployerApplicationService
         app.Status = newStatus;
         app.UpdatedAt = DateTime.UtcNow;
         await _appRepo.UpdateAsync(app);
+        
+        var templateKey = newStatus switch
+        {
+            ApplicationStatus.Reviewing => "ApplicationReviewing",
+            ApplicationStatus.Interview => "ApplicationInterview",
+            ApplicationStatus.Accepted => "ApplicationAccepted",
+            ApplicationStatus.Rejected => "ApplicationRejected",
+            _ => null
+        };
+        
+        if (templateKey != null)
+        {
+            await _emailNotifier.SendAsync(templateKey, app.JobSeeker.Email!, new Dictionary<string, string>
+            {
+                ["FullName"] = app.JobSeeker.FullName,
+                ["JobTitle"] = app.JobPosting.Title
+            });
+        }
+        
         return MapToDto(app);
     }
 

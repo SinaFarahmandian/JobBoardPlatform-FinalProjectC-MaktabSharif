@@ -5,6 +5,7 @@ namespace JobBoardPlatform.Buisiness.Interfaces;
 
 public interface IJobPostingRepository
 {
+    Task<List<JobPosting>> GetAllForAdminAsync();
     Task<JobPosting?> GetByIdAsync(int id);
     Task<List<JobPosting>> GetByEmployerIdAsync(int employerId);
     Task AddAsync(JobPosting posting);

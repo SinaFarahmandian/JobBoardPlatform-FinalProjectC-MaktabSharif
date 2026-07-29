@@ -67,7 +67,8 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
-
+builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
+builder.Services.AddScoped<IEmailTemplateRepository, EmailTemplateRepository>();
 builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
 builder.Services.AddScoped<IEmployerRepository, EmployerRepository>();
 builder.Services.AddScoped<IJobPostingRepository, JobPostingRepository>();
@@ -76,6 +77,11 @@ builder.Services.AddScoped<IJobSeekerRepository, JobSeekerRepository>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
 
+builder.Services.AddScoped<IAdminEmployerService, AdminEmployerService>();
+builder.Services.AddScoped<IAdminJobSeekerService, AdminJobSeekerService>();
+builder.Services.AddScoped<IAdminJobPostingService, AdminJobPostingService>();
+builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
+builder.Services.AddScoped<IAdminEmailTemplateService, AdminEmailTemplateService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddScoped<IJobPostingService, JobPostingService>();
@@ -83,7 +89,8 @@ builder.Services.AddScoped<IEmployerApplicationService, EmployerApplicationServi
 builder.Services.AddScoped<IJobSeekerProfileService, JobSeekerProfileService>();
 builder.Services.AddScoped<IPublicJobPostingService, PublicJobPostingService>();
 builder.Services.AddScoped<IJobSeekerApplicationService, JobSeekerApplicationService>();
-builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IEmailNotificationService, EmailNotificationService>();
+builder.Services.AddScoped<IEmailService, MailKitEmailService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 
 
@@ -111,6 +118,8 @@ using (var scope = app.Services.CreateScope())
         if (result.Succeeded)
             await userManager.AddToRoleAsync(admin, "Admin");
     }
+    
+    await EmailTemplateSeeder.SeedDefaultTemplatesAsync(context);
     
     if (app.Environment.IsDevelopment())
     {

@@ -36,6 +36,8 @@ public class JobPosting : BaseEntity
     public DateTime? ExpiresAt { get; set; }
 
     public bool IsFeatured { get; set; } = false;
+    
+    public DateTime? FeaturedUntil { get; set; }
 
     public bool IsActive { get; set; } = true;
 
