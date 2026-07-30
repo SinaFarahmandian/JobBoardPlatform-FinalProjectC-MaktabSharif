@@ -43,7 +43,10 @@ public class AdminEmployerService : IAdminEmployerService
     public async Task ApproveAsync(int employerId)
     {
         var employer = await _employerRepo.GetByIdWithCompanyAsync(employerId)
-            ?? throw new NotFoundException("کارفرما پیدا نشد");
+                       ?? throw new NotFoundException("کارفرما پیدا نشد");
+
+        if (employer.IsApproved)
+            throw new BadRequestException("این کارفرما از قبل تأیید شده است");
 
         employer.IsApproved = true;
         employer.UpdatedAt = DateTime.UtcNow;
@@ -59,7 +62,10 @@ public class AdminEmployerService : IAdminEmployerService
     public async Task RejectAsync(int employerId)
     {
         var employer = await _employerRepo.GetByIdWithCompanyAsync(employerId)
-            ?? throw new NotFoundException("کارفرما پیدا نشد");
+                       ?? throw new NotFoundException("کارفرما پیدا نشد");
+
+        if (!employer.IsApproved)
+            throw new BadRequestException("این کارفرما از قبل تأییدنشده/ردشده است");
 
         employer.IsApproved = false;
         employer.UpdatedAt = DateTime.UtcNow;
