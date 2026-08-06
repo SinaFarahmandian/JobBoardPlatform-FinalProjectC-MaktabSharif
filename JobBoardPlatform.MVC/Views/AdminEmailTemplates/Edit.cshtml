@@ -1,0 +1,9 @@
+@model JobBoardPlatform.Buisiness.Dtos.Email.UpdateEmailTemplateDto
+@{ ViewData["Title"] = "ویرایش قالب ایمیل"; }
+<h2>ویرایش قالب: @ViewData["Key"]</h2>
+<form method="post" class="col-md-6">
+    <div class="mb-3"><label asp-for="Subject" class="form-label"></label><input asp-for="Subject" class="form-control" /></div>
+    <div class="mb-3"><label asp-for="Body" class="form-label"></label><textarea asp-for="Body" class="form-control" rows="5"></textarea></div>
+    <div class="form-check mb-3"><input asp-for="IsEnabled" class="form-check-input" /><label asp-for="IsEnabled" class="form-check-label"></label></div>
+    <button class="btn btn-primary">ذخیره</button>
+</form>

@@ -1,0 +1,25 @@
+@model List<JobBoardPlatform.Buisiness.Dtos.JobPosting.JobPostingDto>
+@{ ViewData["Title"] = "آگهی‌های من"; }
+<h2>آگهی‌های من</h2>
+<a asp-action="Create" class="btn btn-primary mb-3">ساخت آگهی جدید</a>
+<table class="table">
+    <thead><tr><th>عنوان</th><th>وضعیت</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var jp in Model)
+    {
+        <tr>
+            <td>@jp.Title</td>
+            <td>@(jp.IsActive ? "فعال" : "غیرفعال")</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@jp.Id" class="btn btn-sm btn-outline-secondary">ویرایش</a>
+                <form asp-action="ToggleActive" asp-route-id="@jp.Id" method="post" class="d-inline">
+                    <button class="btn btn-sm btn-outline-warning">فعال/غیرفعال</button>
+                </form>
+                <form asp-action="Delete" asp-route-id="@jp.Id" method="post" class="d-inline" onsubmit="return confirm('مطمئنید؟')">
+                    <button class="btn btn-sm btn-outline-danger">حذف</button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

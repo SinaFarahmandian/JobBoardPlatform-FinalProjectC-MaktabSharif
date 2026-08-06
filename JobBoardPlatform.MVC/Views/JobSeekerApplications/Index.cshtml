@@ -1,0 +1,26 @@
+@model List<JobBoardPlatform.Buisiness.Dtos.JobApplication.JobSeekerApplicationDto>
+@{ ViewData["Title"] = "درخواست‌های من"; }
+<h2>درخواست‌های من</h2>
+<table class="table">
+    <thead><tr><th>آگهی</th><th>شرکت</th><th>وضعیت</th><th>تاریخ</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var app in Model)
+    {
+        <tr>
+            <td>@app.JobPostingTitle</td>
+            <td>@app.CompanyName</td>
+            <td><span class="badge bg-info">@app.Status</span></td>
+            <td>@app.AppliedAt.ToString("yyyy/MM/dd")</td>
+            <td>
+                <a asp-action="Details" asp-route-id="@app.Id" class="btn btn-sm btn-outline-secondary">جزئیات</a>
+                @if (app.Status == "Pending")
+                {
+                    <form asp-action="Cancel" asp-route-id="@app.Id" method="post" class="d-inline">
+                        <button class="btn btn-sm btn-outline-danger">لغو</button>
+                    </form>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

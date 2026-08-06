@@ -1,0 +1,10 @@
+﻿@{
+    var message = ViewData["Message"] as string ?? "خطایی رخ داد";
+    var statusCode = ViewData["StatusCode"] as int? ?? 500;
+    ViewData["Title"] = "خطا";
+}
+<div class="container mt-5 text-center">
+    <h1 class="text-danger">خطا @statusCode</h1>
+    <p class="lead">@message</p>
+    <a asp-controller="Public" asp-action="Index" class="btn btn-primary">بازگشت به صفحه‌ی اصلی</a>
+</div>

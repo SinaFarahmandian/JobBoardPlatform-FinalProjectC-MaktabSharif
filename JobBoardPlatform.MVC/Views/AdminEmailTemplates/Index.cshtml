@@ -1,0 +1,17 @@
+@model List<JobBoardPlatform.Buisiness.Dtos.Email.EmailTemplateDto>
+@{ ViewData["Title"] = "قالب‌های ایمیل"; }
+<h2>قالب‌های ایمیل</h2>
+<table class="table">
+    <thead><tr><th>کلید</th><th>موضوع</th><th>فعال</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var t in Model)
+    {
+        <tr>
+            <td>@t.Key</td>
+            <td>@t.Subject</td>
+            <td>@(t.IsEnabled ? "بله" : "خیر")</td>
+            <td><a asp-action="Edit" asp-route-key="@t.Key" class="btn btn-sm btn-outline-primary">ویرایش</a></td>
+        </tr>
+    }
+    </tbody>
+</table>

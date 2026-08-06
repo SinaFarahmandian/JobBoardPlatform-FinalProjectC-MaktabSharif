@@ -1,0 +1,9 @@
+@model JobBoardPlatform.Buisiness.Dtos.Company.UpdateCompanyDto
+@{ ViewData["Title"] = "ویرایش شرکت"; }
+<form asp-action="Edit" method="post" class="col-md-6">
+    <div class="mb-3"><label asp-for="Name" class="form-label"></label><input asp-for="Name" class="form-control" /></div>
+    <div class="mb-3"><label asp-for="Website" class="form-label"></label><input asp-for="Website" class="form-control" /></div>
+    <div class="mb-3"><label asp-for="Description" class="form-label"></label><textarea asp-for="Description" class="form-control"></textarea></div>
+    <div class="mb-3"><label asp-for="Industry" class="form-label"></label><input asp-for="Industry" class="form-control" /></div>
+    <button class="btn btn-primary">ذخیره</button>
+</form>

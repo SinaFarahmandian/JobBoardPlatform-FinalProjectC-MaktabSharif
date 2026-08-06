@@ -1,0 +1,6 @@
+@model JobBoardPlatform.Buisiness.Dtos.Company.CompanyDto
+@{ ViewData["Title"] = "شرکت من"; }
+<h2>@Model.Name</h2>
+<p>@Model.Description</p>
+<p><strong>وب‌سایت:</strong> @Model.Website</p>
+<a asp-action="Edit" class="btn btn-outline-primary">ویرایش</a>

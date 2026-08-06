@@ -1,0 +1,16 @@
+@model JobBoardPlatform.Buisiness.Dtos.Admin.DashboardStatsDto
+@{ ViewData["Title"] = "داشبورد ادمین"; }
+<h2>داشبورد ادمین</h2>
+<div class="row">
+    <div class="col-md-3"><div class="card p-3"><h5>کل کارجوها</h5><h3>@Model.TotalJobSeekers</h3></div></div>
+    <div class="col-md-3"><div class="card p-3"><h5>کل کارفرماها</h5><h3>@Model.TotalEmployers</h3></div></div>
+    <div class="col-md-3"><div class="card p-3"><h5>آگهی فعال</h5><h3>@Model.ActiveJobPostings</h3></div></div>
+    <div class="col-md-3"><div class="card p-3"><h5>در انتظار تأیید</h5><h3>@Model.PendingEmployerApprovals</h3></div></div>
+</div>
+<h4 class="mt-4">درخواست‌ها به تفکیک وضعیت</h4>
+<ul>
+    @foreach (var kv in Model.ApplicationsByStatus)
+    {
+        <li>@kv.Key: @kv.Value</li>
+    }
+</ul>

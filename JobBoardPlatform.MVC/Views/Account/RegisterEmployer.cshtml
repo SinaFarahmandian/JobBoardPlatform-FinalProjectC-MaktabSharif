@@ -1,0 +1,12 @@
+@model JobBoardPlatform.MVC.Models.Account.RegisterEmployerViewModel
+@{ ViewData["Title"] = "ثبت‌نام کارفرما"; }
+<h2>ثبت‌نام کارفرما</h2>
+<div asp-validation-summary="All" class="text-danger"></div>
+<form asp-action="RegisterEmployer" method="post" class="col-md-6">
+    <div class="mb-3"><label asp-for="FullName" class="form-label"></label><input asp-for="FullName" class="form-control" /></div>
+    <div class="mb-3"><label asp-for="Email" class="form-label"></label><input asp-for="Email" class="form-control" /></div>
+    <div class="mb-3"><label asp-for="Password" class="form-label"></label><input asp-for="Password" class="form-control" /></div>
+    <div class="mb-3"><label asp-for="CompanyName" class="form-label"></label><input asp-for="CompanyName" class="form-control" /></div>
+    <div class="mb-3"><label asp-for="CompanyWebsite" class="form-label"></label><input asp-for="CompanyWebsite" class="form-control" /></div>
+    <button type="submit" class="btn btn-primary">ثبت‌نام</button>
+</form>

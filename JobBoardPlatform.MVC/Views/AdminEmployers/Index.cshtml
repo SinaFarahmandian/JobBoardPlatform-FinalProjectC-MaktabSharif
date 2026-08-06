@@ -1,0 +1,25 @@
+@model List<JobBoardPlatform.Buisiness.Dtos.Admin.EmployerAdminDto>
+@{ ViewData["Title"] = "مدیریت کارفرماها"; }
+<h2>مدیریت کارفرماها</h2>
+<table class="table">
+    <thead><tr><th>نام</th><th>شرکت</th><th>وضعیت تأیید</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var e in Model)
+    {
+        <tr>
+            <td>@e.FullName</td>
+            <td>@e.CompanyName</td>
+            <td>@(e.IsApproved ? "تأییدشده" : "در انتظار")</td>
+            <td>
+                <a asp-action="Details" asp-route-id="@e.Id" class="btn btn-sm btn-outline-secondary">جزئیات</a>
+                <form asp-action="Approve" asp-route-id="@e.Id" method="post" class="d-inline">
+                    <button class="btn btn-sm btn-success">تأیید</button>
+                </form>
+                <form asp-action="Reject" asp-route-id="@e.Id" method="post" class="d-inline">
+                    <button class="btn btn-sm btn-danger">رد</button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

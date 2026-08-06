@@ -1,0 +1,8 @@
+@model JobBoardPlatform.Buisiness.Dtos.JobApplication.JobSeekerApplicationDto
+@{ ViewData["Title"] = "جزئیات درخواست"; }
+<h2>جزئیات درخواست</h2>
+<p><strong>آگهی:</strong> @Model.JobPostingTitle</p>
+<p><strong>شرکت:</strong> @Model.CompanyName</p>
+<p><strong>وضعیت:</strong> @Model.Status</p>
+<p><strong>تاریخ ارسال:</strong> @Model.AppliedAt</p>
+<a asp-action="Index" class="btn btn-secondary">بازگشت</a>

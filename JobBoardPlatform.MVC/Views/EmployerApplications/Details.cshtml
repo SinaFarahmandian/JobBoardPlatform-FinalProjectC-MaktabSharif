@@ -1,0 +1,16 @@
+@model JobBoardPlatform.Buisiness.Dtos.JobApplication.JobApplicationDto
+@{ ViewData["Title"] = "جزئیات درخواست"; }
+<h2>درخواست از @Model.JobSeekerName</h2>
+<p><strong>وضعیت فعلی:</strong> @Model.Status</p>
+<p><strong>متن معرفی:</strong> @Model.CoverLetter</p>
+
+<form asp-action="ChangeStatus" asp-route-id="@Model.Id" method="post" class="d-flex gap-2">
+    <input type="hidden" name="jobPostingId" value="@Model.JobPostingId" />
+    <select name="newStatus" class="form-select w-auto">
+        <option value="Reviewing">در حال بررسی</option>
+        <option value="Interview">دعوت به مصاحبه</option>
+        <option value="Accepted">پذیرش</option>
+        <option value="Rejected">رد</option>
+    </select>
+    <button class="btn btn-primary">تغییر وضعیت</button>
+</form>

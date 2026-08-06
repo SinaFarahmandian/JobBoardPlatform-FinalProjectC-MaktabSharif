@@ -1,0 +1,19 @@
+@model List<JobBoardPlatform.Buisiness.Dtos.JobApplication.JobApplicationDto>
+@{ ViewData["Title"] = "درخواست‌های آگهی"; var jobPostingId = ViewData["JobPostingId"]; }
+<h2>درخواست‌های دریافتی</h2>
+<table class="table">
+    <thead><tr><th>کارجو</th><th>وضعیت</th><th>تاریخ</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var app in Model)
+    {
+        <tr>
+            <td>@app.JobSeekerName</td>
+            <td><span class="badge bg-info">@app.Status</span></td>
+            <td>@app.AppliedAt.ToString("yyyy/MM/dd")</td>
+            <td>
+                <a asp-action="Details" asp-route-id="@app.Id" class="btn btn-sm btn-outline-secondary">جزئیات</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

@@ -1,0 +1,7 @@
+@model JobBoardPlatform.Buisiness.Dtos.Admin.JobSeekerAdminDetailsDto
+@{ ViewData["Title"] = "جزئیات کارجو"; }
+<h2>@Model.FullName</h2>
+<p><strong>مهارت‌ها:</strong> @Model.Skills</p>
+<p><strong>سابقه:</strong> @Model.YearsOfExperience سال</p>
+<p><strong>تعداد درخواست‌ها:</strong> @Model.ApplicationsCount</p>
+<p><strong>رزومه:</strong> @(Model.HasResume ? "دارد" : "ندارد")</p>

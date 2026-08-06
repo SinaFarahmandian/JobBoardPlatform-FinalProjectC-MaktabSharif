@@ -1,0 +1,22 @@
+@model JobBoardPlatform.Buisiness.Dtos.JobPosting.JobPostingPublicDto
+@{ ViewData["Title"] = Model.Title; }
+<h2>@Model.Title</h2>
+<p class="text-muted">@Model.CompanyName — @Model.Location — @Model.EmploymentType</p>
+<p>@Model.Description</p>
+<p><strong>حقوق:</strong> @Model.SalaryMin تا @Model.SalaryMax</p>
+<p><strong>مهارت‌ها:</strong> @Model.Skills</p>
+
+@if (User.IsInRole("JobSeeker"))
+{
+    <form asp-controller="JobSeekerApplications" asp-action="Apply" method="post">
+        <input type="hidden" name="JobPostingId" value="@Model.Id" />
+        <div class="mb-3">
+            <textarea name="CoverLetter" class="form-control" placeholder="متن معرفی (اختیاری)"></textarea>
+        </div>
+        <button class="btn btn-success">ارسال درخواست</button>
+    </form>
+}
+else if (!User.Identity!.IsAuthenticated)
+{
+    <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary">برای ارسال درخواست وارد شوید</a>
+}

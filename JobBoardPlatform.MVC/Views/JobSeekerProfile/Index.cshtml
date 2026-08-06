@@ -1,0 +1,27 @@
+@model JobBoardPlatform.Buisiness.Dtos.JobSeekerProfile.JobSeekerProfileDto
+@{ ViewData["Title"] = "پروفایل من"; }
+<h2>پروفایل من</h2>
+<p><strong>نام:</strong> @Model.FullName</p>
+<p><strong>ایمیل:</strong> @Model.Email</p>
+<p><strong>مهارت‌ها:</strong> @Model.Skills</p>
+<p><strong>سابقه‌ی کاری:</strong> @Model.YearsOfExperience سال</p>
+<a asp-action="Edit" class="btn btn-outline-primary">ویرایش پروفایل</a>
+
+<hr />
+<h4>رزومه</h4>
+@if (Model.HasResume)
+{
+    <p>فایل فعلی: @Model.ResumeFileName</p>
+    <a asp-action="DownloadResume" class="btn btn-sm btn-outline-secondary">دانلود</a>
+    <form asp-action="DeleteResume" method="post" class="d-inline">
+        <button class="btn btn-sm btn-outline-danger">حذف رزومه</button>
+    </form>
+}
+else
+{
+    <p class="text-muted">رزومه‌ای ثبت نشده است.</p>
+}
+<form asp-action="UploadResume" method="post" enctype="multipart/form-data" class="mt-2">
+    <input type="file" name="file" accept=".pdf" class="form-control mb-2" />
+    <button class="btn btn-primary">آپلود رزومه</button>
+</form>

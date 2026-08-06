@@ -1,0 +1,7 @@
+@model JobBoardPlatform.Buisiness.Dtos.Admin.EmployerAdminDetailsDto
+@{ ViewData["Title"] = "جزئیات کارفرما"; }
+<h2>@Model.FullName</h2>
+<p><strong>شرکت:</strong> @Model.CompanyName</p>
+<p><strong>وب‌سایت:</strong> @Model.CompanyWebsite</p>
+<p><strong>تعداد آگهی‌ها:</strong> @Model.JobPostingsCount</p>
+<a asp-action="Index" class="btn btn-secondary">بازگشت</a>

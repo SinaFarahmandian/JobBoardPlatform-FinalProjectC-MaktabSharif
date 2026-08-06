@@ -1,0 +1,13 @@
+@model JobBoardPlatform.Buisiness.Dtos.JobPosting.UpdateJobPostingDto
+@{ ViewData["Title"] = "بروزرسانی آگهی"; }
+<form method="post" class="col-md-6">
+    <div class="mb-3"><label asp-for="Title" class="form-label"></label><input asp-for="Title" class="form-control" /></div>
+    <div class="mb-3"><label asp-for="Description" class="form-label"></label><textarea asp-for="Description" class="form-control"></textarea></div>
+    <div class="mb-3"><label asp-for="Location" class="form-label"></label><input asp-for="Location" class="form-control" /></div>
+    <div class="mb-3"><label asp-for="EmploymentType" class="form-label"></label><input asp-for="EmploymentType" class="form-control" /></div>
+    <div class="mb-3"><label asp-for="SalaryMin" class="form-label"></label><input asp-for="SalaryMin" class="form-control" /></div>
+    <div class="mb-3"><label asp-for="SalaryMax" class="form-label"></label><input asp-for="SalaryMax" class="form-control" /></div>
+    <div class="mb-3"><label asp-for="Category" class="form-label"></label><input asp-for="Category" class="form-control" /></div>
+    <div class="mb-3"><label asp-for="Skills" class="form-label"></label><input asp-for="Skills" class="form-control" /></div>
+    <button class="btn btn-primary">ذخیره</button>
+</form>
