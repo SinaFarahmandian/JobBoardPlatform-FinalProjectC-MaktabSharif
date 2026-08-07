@@ -1,31 +1,102 @@
-html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
 body {
-  margin-bottom: 60px;
+  font-family: "Segoe UI", Tahoma, sans-serif;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+.card {
+  transition: box-shadow 0.15s ease-in-out, transform 0.15s ease-in-out;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+.card:hover {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.navbar-brand i {
+  margin-left: 0.4rem;
+}
+
+.nav-link i {
+  margin-left: 0.3rem;
+}
+
+.badge {
+  font-size: 0.8rem;
+}
+
+.admin-sidebar {
+  min-height: 100vh;
+  width: 250px;
+  background-color: #2c3e50;
+  position: fixed;
+  top: 0;
+  right: 0;
+  padding-top: 1rem;
+  transition: right 0.2s ease-in-out;
+  z-index: 1030;
+}
+
+.admin-sidebar .brand {
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 0.75rem 1.25rem 1.5rem;
+  display: block;
+}
+
+.admin-sidebar .nav-link {
+  color: #bdc3c7;
+  padding: 0.65rem 1.25rem;
+  border-right: 3px solid transparent;
+}
+
+.admin-sidebar .nav-link i {
+  margin-left: 0.6rem;
+  width: 1.1rem;
+  display: inline-block;
+  text-align: center;
+}
+
+.admin-sidebar .nav-link:hover {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.admin-sidebar .nav-link.active {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.08);
+  border-right-color: #18bc9c;
+}
+
+.admin-content {
+  margin-right: 250px;
+  padding: 1.5rem;
+}
+
+.admin-topbar {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e5e5;
+  padding: 0.75rem 1.5rem;
+  margin-right: 250px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-stat-card {
+  border-right: 4px solid #18bc9c;
+}
+
+@media (max-width: 991.98px) {
+  .admin-sidebar {
+    right: -250px;
+  }
+
+  .admin-sidebar.show {
+    right: 0;
+  }
+
+  .admin-content,
+  .admin-topbar {
+    margin-right: 0;
+  }
 }

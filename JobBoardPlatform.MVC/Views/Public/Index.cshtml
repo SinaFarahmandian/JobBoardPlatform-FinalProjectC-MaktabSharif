@@ -1,25 +1,47 @@
-@using JobBoardPlatform.Buisiness.Dtos.JobPosting
-@model JobBoardPlatform.Buisiness.Common.PagedResult<JobBoardPlatform.Buisiness.Dtos.JobPosting.JobPostingPublicDto>
-@{ ViewData["Title"] = "آگهی‌های شغلی"; var q = ViewData["Query"] as JobPostingSearchQueryDto; }
-<h2>آگهی‌های شغلی</h2>
+@model PagedResult<JobPostingPublicDto>
+@{
+    ViewData["Title"] = "آگهی‌های شغلی";
+    var q = ViewData["Query"] as JobPostingSearchQueryDto;
+}
+<div class="p-4 mb-4 bg-primary bg-gradient text-white rounded-3">
+    <h2><i class="bi bi-search"></i> فرصت‌های شغلی</h2>
+    <p class="mb-0">بین آگهی‌های فعال بگرد و همین حالا درخواست بده</p>
+</div>
 
 <form method="get" class="row g-2 mb-4">
     <div class="col-md-3"><input name="Search" value="@q?.Search" class="form-control" placeholder="عنوان شغل" /></div>
     <div class="col-md-2"><input name="City" value="@q?.City" class="form-control" placeholder="شهر" /></div>
     <div class="col-md-2"><input name="Category" value="@q?.Category" class="form-control" placeholder="دسته‌بندی" /></div>
     <div class="col-md-2"><input name="Skill" value="@q?.Skill" class="form-control" placeholder="مهارت" /></div>
-    <div class="col-md-2"><button class="btn btn-primary w-100">جستجو</button></div>
+    <div class="col-md-2"><button class="btn btn-primary w-100"><i class="bi bi-search"></i> جستجو</button></div>
 </form>
 
 @foreach (var job in Model.Items)
 {
-    <div class="card mb-2 @(job.IsFeatured ? "border-warning" : "")">
+    <div class="card mb-3 @(job.IsFeatured ? "border-warning border-2" : "")">
         <div class="card-body">
-            <h5>@job.Title @(job.IsFeatured ? "⭐" : "")</h5>
-            <p class="text-muted">@job.CompanyName — @job.Location — @job.EmploymentType</p>
+            <div class="d-flex justify-content-between">
+                <h5 class="card-title">
+                    @job.Title
+                    @if (job.IsFeatured)
+                    {
+                        <span class="badge bg-warning text-dark"><i class="bi bi-star-fill"></i> ویژه</span>
+                    }
+                </h5>
+            </div>
+            <p class="text-muted mb-2">
+                <i class="bi bi-building"></i> @job.CompanyName
+                &nbsp;|&nbsp; <i class="bi bi-geo-alt"></i> @job.Location
+                &nbsp;|&nbsp; <i class="bi bi-briefcase"></i> @job.EmploymentType
+            </p>
             <a asp-action="Details" asp-route-id="@job.Id" class="btn btn-sm btn-outline-primary">مشاهده جزئیات</a>
         </div>
     </div>
+}
+
+@if (!Model.Items.Any())
+{
+    <div class="alert alert-info"><i class="bi bi-info-circle"></i> آگهی‌ای با این مشخصات پیدا نشد.</div>
 }
 
 <nav>

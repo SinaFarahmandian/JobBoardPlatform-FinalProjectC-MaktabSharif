@@ -1,7 +1,17 @@
-@model JobBoardPlatform.Buisiness.Dtos.Admin.EmployerAdminDetailsDto
-@{ ViewData["Title"] = "جزئیات کارفرما"; }
-<h2>@Model.FullName</h2>
-<p><strong>شرکت:</strong> @Model.CompanyName</p>
-<p><strong>وب‌سایت:</strong> @Model.CompanyWebsite</p>
-<p><strong>تعداد آگهی‌ها:</strong> @Model.JobPostingsCount</p>
-<a asp-action="Index" class="btn btn-secondary">بازگشت</a>
+@model EmployerAdminDetailsDto
+@{
+    ViewData["Title"] = "جزئیات کارفرما";
+    Layout = "_AdminLayout";
+}
+<div class="card">
+    <div class="card-body">
+        <h4><i class="bi bi-person-badge"></i> @Model.FullName</h4>
+        <hr />
+        <p><strong>شرکت:</strong> @Model.CompanyName</p>
+        <p><strong>وب‌سایت:</strong> @Model.CompanyWebsite</p>
+        <p><strong>توضیحات:</strong> @Model.CompanyDescription</p>
+        <p><strong>حوزه‌ی فعالیت:</strong> @Model.Industry</p>
+        <p><strong>تعداد آگهی‌ها:</strong> @Model.JobPostingsCount</p>
+        <a asp-action="Index" class="btn btn-secondary"><i class="bi bi-arrow-right"></i> بازگشت</a>
+    </div>
+</div>

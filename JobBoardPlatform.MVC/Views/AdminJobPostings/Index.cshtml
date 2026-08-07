@@ -1,30 +1,45 @@
-@model List<JobBoardPlatform.Buisiness.Dtos.Admin.JobPostingAdminDto>
-@{ ViewData["Title"] = "مدیریت آگهی‌ها"; }
-<h2>مدیریت آگهی‌ها</h2>
-<table class="table">
-    <thead><tr><th>عنوان</th><th>شرکت</th><th>وضعیت</th><th>ویژه</th><th></th></tr></thead>
-    <tbody>
-    @foreach (var jp in Model)
-    {
-        <tr>
-            <td>@jp.Title</td>
-            <td>@jp.CompanyName</td>
-            <td>@(jp.IsActive ? "فعال" : "غیرفعال")</td>
-            <td>@(jp.IsFeatured ? "⭐" : "-")</td>
-            <td>
-                <form asp-action="ToggleStatus" asp-route-id="@jp.Id" method="post" class="d-inline">
-                    <input type="hidden" name="isActive" value="@(!jp.IsActive)" />
-                    <button class="btn btn-sm btn-outline-warning">فعال/غیرفعال</button>
-                </form>
-                <form asp-action="SetFeatured" asp-route-id="@jp.Id" method="post" class="d-inline">
-                    <input type="hidden" name="isFeatured" value="@(!jp.IsFeatured)" />
-                    <button class="btn btn-sm btn-outline-info">ویژه/عادی</button>
-                </form>
-                <form asp-action="Delete" asp-route-id="@jp.Id" method="post" class="d-inline" onsubmit="return confirm('مطمئنید؟')">
-                    <button class="btn btn-sm btn-outline-danger">حذف</button>
-                </form>
-            </td>
-        </tr>
-    }
-    </tbody>
-</table>
+@model List<JobPostingAdminDto>
+@{
+    ViewData["Title"] = "مدیریت آگهی‌ها";
+    Layout = "_AdminLayout";
+}
+<div class="card">
+    <div class="card-body">
+        <table class="table table-hover align-middle">
+            <thead><tr><th>عنوان</th><th>شرکت</th><th>وضعیت</th><th>ویژه</th><th></th></tr></thead>
+            <tbody>
+            @foreach (var jp in Model)
+            {
+                <tr>
+                    <td>@jp.Title</td>
+                    <td>@jp.CompanyName</td>
+                    <td>
+                        @if (jp.IsActive)
+                        {
+                            <span class="badge bg-success">فعال</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">غیرفعال</span>
+                        }
+                    </td>
+                    <td>@(jp.IsFeatured ? "⭐" : "-")</td>
+                    <td>
+                        <form asp-action="ToggleStatus" asp-route-id="@jp.Id" method="post" class="d-inline">
+                            <input type="hidden" name="isActive" value="@(!jp.IsActive)" />
+                            <button class="btn btn-sm btn-outline-warning"><i class="bi bi-toggle2-on"></i></button>
+                        </form>
+                        <form asp-action="SetFeatured" asp-route-id="@jp.Id" method="post" class="d-inline">
+                            <input type="hidden" name="isFeatured" value="@(!jp.IsFeatured)" />
+                            <button class="btn btn-sm btn-outline-info"><i class="bi bi-star"></i></button>
+                        </form>
+                        <form asp-action="Delete" asp-route-id="@jp.Id" method="post" class="d-inline" onsubmit="return confirm('مطمئنید؟')">
+                            <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,26 +1,42 @@
-@model List<JobBoardPlatform.Buisiness.Dtos.JobApplication.JobSeekerApplicationDto>
-@{ ViewData["Title"] = "درخواست‌های من"; }
-<h2>درخواست‌های من</h2>
-<table class="table">
-    <thead><tr><th>آگهی</th><th>شرکت</th><th>وضعیت</th><th>تاریخ</th><th></th></tr></thead>
-    <tbody>
-    @foreach (var app in Model)
+@model List<JobSeekerApplicationDto>
+@{
+    ViewData["Title"] = "درخواست‌های من";
+    string BadgeClass(string status) => status switch
     {
-        <tr>
-            <td>@app.JobPostingTitle</td>
-            <td>@app.CompanyName</td>
-            <td><span class="badge bg-info">@app.Status</span></td>
-            <td>@app.AppliedAt.ToString("yyyy/MM/dd")</td>
-            <td>
-                <a asp-action="Details" asp-route-id="@app.Id" class="btn btn-sm btn-outline-secondary">جزئیات</a>
-                @if (app.Status == "Pending")
-                {
-                    <form asp-action="Cancel" asp-route-id="@app.Id" method="post" class="d-inline">
-                        <button class="btn btn-sm btn-outline-danger">لغو</button>
-                    </form>
-                }
-            </td>
-        </tr>
-    }
-    </tbody>
-</table>
+        "Pending" => "bg-secondary",
+        "Reviewing" => "bg-info",
+        "Interview" => "bg-primary",
+        "Accepted" => "bg-success",
+        "Rejected" => "bg-danger",
+        "Cancelled" => "bg-dark",
+        _ => "bg-secondary"
+    };
+}
+<h2><i class="bi bi-send"></i> درخواست‌های من</h2>
+<div class="card">
+    <div class="card-body">
+        <table class="table table-hover align-middle">
+            <thead><tr><th>آگهی</th><th>شرکت</th><th>وضعیت</th><th>تاریخ</th><th></th></tr></thead>
+            <tbody>
+            @foreach (var app in Model)
+            {
+                <tr>
+                    <td>@app.JobPostingTitle</td>
+                    <td>@app.CompanyName</td>
+                    <td><span class="badge @BadgeClass(app.Status)">@app.Status</span></td>
+                    <td>@app.AppliedAt.ToString("yyyy/MM/dd")</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@app.Id" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a>
+                        @if (app.Status == "Pending")
+                        {
+                            <form asp-action="Cancel" asp-route-id="@app.Id" method="post" class="d-inline">
+                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-x-circle"></i> لغو</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

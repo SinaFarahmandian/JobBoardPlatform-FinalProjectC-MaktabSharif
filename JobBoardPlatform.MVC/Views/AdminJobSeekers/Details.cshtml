@@ -1,7 +1,18 @@
-@model JobBoardPlatform.Buisiness.Dtos.Admin.JobSeekerAdminDetailsDto
-@{ ViewData["Title"] = "جزئیات کارجو"; }
-<h2>@Model.FullName</h2>
-<p><strong>مهارت‌ها:</strong> @Model.Skills</p>
-<p><strong>سابقه:</strong> @Model.YearsOfExperience سال</p>
-<p><strong>تعداد درخواست‌ها:</strong> @Model.ApplicationsCount</p>
-<p><strong>رزومه:</strong> @(Model.HasResume ? "دارد" : "ندارد")</p>
+@model JobSeekerAdminDetailsDto
+@{
+    ViewData["Title"] = "جزئیات کارجو";
+    Layout = "_AdminLayout";
+}
+<div class="card">
+    <div class="card-body">
+        <h4><i class="bi bi-person-badge"></i> @Model.FullName</h4>
+        <hr />
+        <p><strong>ایمیل:</strong> @Model.Email</p>
+        <p><strong>مهارت‌ها:</strong> @Model.Skills</p>
+        <p><strong>سابقه:</strong> @Model.YearsOfExperience سال</p>
+        <p><strong>عنوان شغلی مورد نظر:</strong> @Model.DesiredJobTitle</p>
+        <p><strong>تعداد درخواست‌ها:</strong> @Model.ApplicationsCount</p>
+        <p><strong>رزومه:</strong> @(Model.HasResume ? "دارد" : "ندارد")</p>
+        <a asp-action="Index" class="btn btn-secondary"><i class="bi bi-arrow-right"></i> بازگشت</a>
+    </div>
+</div>

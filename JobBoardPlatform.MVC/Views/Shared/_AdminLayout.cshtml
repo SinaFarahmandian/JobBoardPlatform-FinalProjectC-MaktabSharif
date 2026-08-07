@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - پنل ادمین</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/flatly/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+
+<aside class="admin-sidebar" id="adminSidebar">
+    <a class="brand" asp-controller="AdminDashboard" asp-action="Index">
+        <i class="bi bi-briefcase-fill"></i> پنل ادمین
+    </a>
+    <nav class="nav flex-column">
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminDashboard" ? "active" : "")"
+           asp-controller="AdminDashboard" asp-action="Index">
+            <i class="bi bi-speedometer2"></i> داشبورد
+        </a>
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminEmployers" ? "active" : "")"
+           asp-controller="AdminEmployers" asp-action="Index">
+            <i class="bi bi-building"></i> مدیریت کارفرماها
+        </a>
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminJobSeekers" ? "active" : "")"
+           asp-controller="AdminJobSeekers" asp-action="Index">
+            <i class="bi bi-people"></i> مدیریت کارجوها
+        </a>
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminJobPostings" ? "active" : "")"
+           asp-controller="AdminJobPostings" asp-action="Index">
+            <i class="bi bi-file-earmark-text"></i> مدیریت آگهی‌ها
+        </a>
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminEmailTemplates" ? "active" : "")"
+           asp-controller="AdminEmailTemplates" asp-action="Index">
+            <i class="bi bi-envelope"></i> قالب‌های ایمیل
+        </a>
+        <hr class="text-secondary mx-3" />
+        <a class="nav-link" asp-controller="Public" asp-action="Index">
+            <i class="bi bi-box-arrow-left"></i> بازگشت به سایت
+        </a>
+        <form asp-controller="Account" asp-action="Logout" method="post">
+            <button type="submit" class="nav-link border-0 bg-transparent w-100 text-start">
+                <i class="bi bi-power"></i> خروج
+            </button>
+        </form>
+    </nav>
+</aside>
+
+<header class="admin-topbar">
+    <button class="btn btn-outline-secondary d-lg-none" id="sidebarToggle">
+        <i class="bi bi-list"></i>
+    </button>
+    <h5 class="mb-0">@ViewData["Title"]</h5>
+    <span class="text-muted"><i class="bi bi-person-fill"></i> @User.Identity?.Name</span>
+</header>
+
+<main class="admin-content">
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success"><i class="bi bi-check-circle-fill"></i> @TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger"><i class="bi bi-exclamation-triangle-fill"></i> @TempData["Error"]</div>
+    }
+    @RenderBody()
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById("sidebarToggle")?.addEventListener("click", function () {
+        document.getElementById("adminSidebar").classList.toggle("show");
+    });
+</script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

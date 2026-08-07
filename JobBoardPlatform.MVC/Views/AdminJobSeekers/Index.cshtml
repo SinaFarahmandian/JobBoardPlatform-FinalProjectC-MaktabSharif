@@ -1,23 +1,38 @@
-@model List<JobBoardPlatform.Buisiness.Dtos.Admin.JobSeekerAdminDto>
-@{ ViewData["Title"] = "مدیریت کارجوها"; }
-<h2>مدیریت کارجوها</h2>
-<table class="table">
-    <thead><tr><th>نام</th><th>ایمیل</th><th>وضعیت</th><th></th></tr></thead>
-    <tbody>
-    @foreach (var s in Model)
-    {
-        <tr>
-            <td>@s.FullName</td>
-            <td>@s.Email</td>
-            <td>@(s.IsActive ? "فعال" : "غیرفعال")</td>
-            <td>
-                <a asp-action="Details" asp-route-id="@s.Id" class="btn btn-sm btn-outline-secondary">جزئیات</a>
-                <form asp-action="ToggleStatus" asp-route-id="@s.Id" method="post" class="d-inline">
-                    <input type="hidden" name="isActive" value="@(!s.IsActive)" />
-                    <button class="btn btn-sm btn-outline-warning">فعال/غیرفعال</button>
-                </form>
-            </td>
-        </tr>
-    }
-    </tbody>
-</table>
+@model List<JobSeekerAdminDto>
+@{
+    ViewData["Title"] = "مدیریت کارجوها";
+    Layout = "_AdminLayout";
+}
+<div class="card">
+    <div class="card-body">
+        <table class="table table-hover align-middle">
+            <thead><tr><th>نام</th><th>ایمیل</th><th>وضعیت</th><th></th></tr></thead>
+            <tbody>
+            @foreach (var s in Model)
+            {
+                <tr>
+                    <td>@s.FullName</td>
+                    <td>@s.Email</td>
+                    <td>
+                        @if (s.IsActive)
+                        {
+                            <span class="badge bg-success">فعال</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">غیرفعال</span>
+                        }
+                    </td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@s.Id" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a>
+                        <form asp-action="ToggleStatus" asp-route-id="@s.Id" method="post" class="d-inline">
+                            <input type="hidden" name="isActive" value="@(!s.IsActive)" />
+                            <button class="btn btn-sm btn-outline-warning"><i class="bi bi-toggle2-on"></i> فعال/غیرفعال</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

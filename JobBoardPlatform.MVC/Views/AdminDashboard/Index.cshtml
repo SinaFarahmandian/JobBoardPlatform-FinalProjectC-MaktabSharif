@@ -1,16 +1,66 @@
-@model JobBoardPlatform.Buisiness.Dtos.Admin.DashboardStatsDto
-@{ ViewData["Title"] = "داشبورد ادمین"; }
-<h2>داشبورد ادمین</h2>
-<div class="row">
-    <div class="col-md-3"><div class="card p-3"><h5>کل کارجوها</h5><h3>@Model.TotalJobSeekers</h3></div></div>
-    <div class="col-md-3"><div class="card p-3"><h5>کل کارفرماها</h5><h3>@Model.TotalEmployers</h3></div></div>
-    <div class="col-md-3"><div class="card p-3"><h5>آگهی فعال</h5><h3>@Model.ActiveJobPostings</h3></div></div>
-    <div class="col-md-3"><div class="card p-3"><h5>در انتظار تأیید</h5><h3>@Model.PendingEmployerApprovals</h3></div></div>
+@model DashboardStatsDto
+@{
+    ViewData["Title"] = "داشبورد ادمین";
+    Layout = "_AdminLayout";
+}
+<div class="row g-3">
+    <div class="col-md-3">
+        <div class="card admin-stat-card p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-muted small">کل کارجوها</div>
+                    <h3 class="mb-0">@Model.TotalJobSeekers</h3>
+                </div>
+                <i class="bi bi-people-fill fs-1 text-primary"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card admin-stat-card p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-muted small">کل کارفرماها</div>
+                    <h3 class="mb-0">@Model.TotalEmployers</h3>
+                </div>
+                <i class="bi bi-building fs-1 text-success"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card admin-stat-card p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-muted small">آگهی فعال</div>
+                    <h3 class="mb-0">@Model.ActiveJobPostings</h3>
+                </div>
+                <i class="bi bi-file-earmark-text-fill fs-1 text-info"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card admin-stat-card p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-muted small">در انتظار تأیید</div>
+                    <h3 class="mb-0">@Model.PendingEmployerApprovals</h3>
+                </div>
+                <i class="bi bi-hourglass-split fs-1 text-warning"></i>
+            </div>
+        </div>
+    </div>
 </div>
-<h4 class="mt-4">درخواست‌ها به تفکیک وضعیت</h4>
-<ul>
-    @foreach (var kv in Model.ApplicationsByStatus)
-    {
-        <li>@kv.Key: @kv.Value</li>
-    }
-</ul>
+
+<div class="card mt-4">
+    <div class="card-header"><i class="bi bi-bar-chart-fill"></i> درخواست‌ها به تفکیک وضعیت</div>
+    <div class="card-body">
+        <ul class="list-group list-group-flush">
+            @foreach (var kv in Model.ApplicationsByStatus)
+            {
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>@kv.Key</span>
+                    <span class="badge bg-secondary">@kv.Value</span>
+                </li>
+            }
+        </ul>
+    </div>
+</div>
