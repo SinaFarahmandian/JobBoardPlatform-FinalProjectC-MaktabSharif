@@ -17,11 +17,19 @@ public class AdminJobSeekersController : Controller
     [HttpGet("{id}")]
     public async Task<IActionResult> Details(int id) => View(await _service.GetDetailsAsync(id));
 
-    [HttpPost("{id}/toggle-status")]
-    public async Task<IActionResult> ToggleStatus(int id, bool isActive)
+    [HttpPost("{id}/activate")]
+    public async Task<IActionResult> Activate(int id)
     {
-        await _service.SetActiveStatusAsync(id, isActive);
-        TempData["Success"] = "وضعیت کارجو به‌روزرسانی شد";
+        await _service.SetActiveStatusAsync(id, true);
+        TempData["Success"] = "The job seeker account has been activated";
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost("{id}/deactivate")]
+    public async Task<IActionResult> Deactivate(int id)
+    {
+        await _service.SetActiveStatusAsync(id, false);
+        TempData["Success"] = "The job seeker account has been deactivated";
         return RedirectToAction(nameof(Index));
     }
 }

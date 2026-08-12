@@ -20,7 +20,9 @@ public class EmployerRepository : IEmployerRepository
         await _context.Set<Employer>().Include(e => e.Company).FirstOrDefaultAsync(e => e.Id == id);
 
     public async Task<List<Employer>> GetPendingApprovalAsync() =>
-        await _context.Set<Employer>().Include(e => e.Company).Where(e => !e.IsApproved).ToListAsync();
+        await _context.Set<Employer>().Include(e => e.Company)
+            .Where(e => !e.IsApproved && e.IsActive)
+            .ToListAsync();
 
     public async Task UpdateAsync(Employer employer)
     {

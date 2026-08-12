@@ -24,7 +24,7 @@ public class Company : BaseEntity
     public Company(string name, string? website = null, string? description = null, string? industry = null)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("نام شرکت نمی‌تواند خالی باشد", nameof(name));
+            throw new ArgumentException("The company name cannot be empty", nameof(name));
 
         Name = name;
         Website = website;

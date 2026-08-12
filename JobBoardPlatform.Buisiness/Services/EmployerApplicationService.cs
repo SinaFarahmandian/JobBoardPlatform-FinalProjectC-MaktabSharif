@@ -41,7 +41,7 @@ public class EmployerApplicationService : IEmployerApplicationService
         var app = await GetOwnedApplicationAsync(employerId, applicationId);
 
         if (!AllowedTransitions.TryGetValue(app.Status, out var allowed) || !allowed.Contains(newStatus))
-            throw new InvalidStatusTransitionException($"تغییر وضعیت از {app.Status} به {newStatus} مجاز نیست");
+            throw new InvalidStatusTransitionException($"Changing the status from {app.Status} to {newStatus} is not allowed");
 
         app.Status = newStatus;
         app.UpdatedAt = DateTime.UtcNow;
@@ -70,16 +70,16 @@ public class EmployerApplicationService : IEmployerApplicationService
 
     private async Task EnsureOwnsPostingAsync(int employerId, int jobPostingId)
     {
-        var posting = await _postingRepo.GetByIdAsync(jobPostingId) ?? throw new NotFoundException("آگهی پیدا نشد");
+        var posting = await _postingRepo.GetByIdAsync(jobPostingId) ?? throw new NotFoundException("The job posting was not found");
         if (posting.EmployerId != employerId)
-            throw new ForbiddenAccessException("شما به این آگهی دسترسی ندارید");
+            throw new ForbiddenAccessException("You do not have access to this job posting");
     }
 
     private async Task<JobApplication> GetOwnedApplicationAsync(int employerId, int applicationId)
     {
-        var app = await _appRepo.GetByIdAsync(applicationId) ?? throw new NotFoundException("درخواست پیدا نشد");
+        var app = await _appRepo.GetByIdAsync(applicationId) ?? throw new NotFoundException("The application was not found");
         if (app.JobPosting.EmployerId != employerId)
-            throw new ForbiddenAccessException("شما به این درخواست دسترسی ندارید");
+            throw new ForbiddenAccessException("You do not have access to this application");
         return app;
     }
 

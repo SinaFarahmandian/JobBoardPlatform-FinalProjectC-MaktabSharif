@@ -14,6 +14,6 @@ public abstract class EmployerControllerBase : ControllerBase
     protected void EnsureApproved()
     {
         if (User.FindFirstValue("isApproved") != "True")
-            throw new ForbiddenAccessException("حساب کارفرمایی شما هنوز تأیید نشده است");
+            throw new ForbiddenAccessException("Your employer account has not yet been approved");
     }
 }

@@ -27,7 +27,7 @@ public class PublicJobPostingService : IPublicJobPostingService
     public async Task<JobPostingPublicDto> GetByIdAsync(int id)
     {
         var posting = await _repo.GetActiveByIdAsync(id)
-                      ?? throw new NotFoundException("آگهی پیدا نشد یا دیگر فعال نیست");
+                      ?? throw new NotFoundException("The job posting was not found or is no longer active");
         return MapToDto(posting);
     }
 
@@ -35,7 +35,8 @@ public class PublicJobPostingService : IPublicJobPostingService
     {
         Id = p.Id, Title = p.Title, Description = p.Description, Location = p.Location,
         SalaryMin = p.SalaryMin, SalaryMax = p.SalaryMax, EmploymentType = p.EmploymentType,
-        Category = p.Category, Skills = p.Skills, IsFeatured = p.IsFeatured,
+        Category = p.Category, Skills = p.Skills,
+        IsFeatured = p.IsFeatured && (p.FeaturedUntil == null || p.FeaturedUntil > DateTime.UtcNow),
         CompanyName = p.Employer?.Company?.Name ?? "", CreatedAt = p.CreatedAt
     };
 }

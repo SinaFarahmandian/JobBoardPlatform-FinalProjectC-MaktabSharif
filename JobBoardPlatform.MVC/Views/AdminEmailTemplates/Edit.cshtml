@@ -1,25 +1,18 @@
 @model UpdateEmailTemplateDto
-@{
-    ViewData["Title"] = "ویرایش قالب ایمیل";
-    Layout = "_AdminLayout";
-}
-<div class="card col-md-8">
-    <div class="card-body">
-        <h5 class="card-title">ویرایش قالب: @ViewData["Key"]</h5>
-        <form method="post">
-            <div class="mb-3">
-                <label asp-for="Subject" class="form-label"></label>
-                <input asp-for="Subject" class="form-control" />
+@{ ViewData["Title"] = "Edit Email Template"; Layout = "_AdminLayout"; }
+<div class="admin-page-head"><div><h1>Edit Email Template</h1><p>Update the <span>@ViewData["Key"]</span> template while preserving its dynamic variables.</p></div><a asp-action="Index" class="btn btn-ghost"><i class="fas fa-arrow-left me-1"></i> Back</a></div>
+<section class="admin-card admin-form">
+    <div class="admin-card-head"><div><h2>Message Content</h2><p>A concise subject and clear copy improve engagement.</p></div></div>
+    <div class="admin-card-body">
+        <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+        <form asp-action="Edit" asp-route-key="@ViewData["Key"]" method="post">
+            <div class="admin-form-grid">
+                <div class="full"><label asp-for="Subject" class="form-label">Email Subject</label><input asp-for="Subject" class="form-control" placeholder="Message subject" /><span asp-validation-for="Subject"></span></div>
+                <div class="full"><label asp-for="Body" class="form-label">Email Body</label><textarea asp-for="Body" class="form-control" rows="10"></textarea><span asp-validation-for="Body"></span><div class="template-hints"><code>{FullName}</code><code>{CompanyName}</code><code>{JobTitle}</code><code>{EmployerName}</code></div><div class="form-text">Only variables relevant to this template are replaced when the message is sent.</div></div>
+                <div class="full"><label class="form-check d-flex align-items-center gap-2"><input asp-for="IsEnabled" class="form-check-input m-0" /><span class="form-label m-0">Enable this message</span></label></div>
             </div>
-            <div class="mb-3">
-                <label asp-for="Body" class="form-label"></label>
-                <textarea asp-for="Body" class="form-control" rows="5"></textarea>
-            </div>
-            <div class="form-check mb-3">
-                <input asp-for="IsEnabled" class="form-check-input" />
-                <label asp-for="IsEnabled" class="form-check-label"></label>
-            </div>
-            <button class="btn btn-primary"><i class="bi bi-save"></i> ذخیره</button>
+            <div class="admin-form-actions"><button class="btn btn-primary" type="submit"><i class="fas fa-save me-1"></i> Save Template</button><a asp-action="Index" class="btn btn-ghost">Cancel</a></div>
         </form>
     </div>
-</div>
+</section>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

@@ -18,7 +18,7 @@ public class AdminJobPostingsController : AdminControllerBase
     public async Task<IActionResult> SetStatus(int id, SetJobPostingStatusDto dto)
     {
         await _service.SetActiveStatusAsync(id, dto.IsActive);
-        return Ok(new { message = "وضعیت آگهی به‌روزرسانی شد" });
+        return Ok(new { message = "The job posting status has been updated" });
     }
 
     [HttpDelete("{id}")]
@@ -32,6 +32,6 @@ public class AdminJobPostingsController : AdminControllerBase
     public async Task<IActionResult> SetFeatured(int id, SetFeaturedDto dto)
     {
         await _service.SetFeaturedAsync(id, dto);
-        return Ok(new { message = "وضعیت ویژه‌بودن آگهی به‌روزرسانی شد" });
+        return Ok(new { message = "The featured status of the job posting has been updated" });
     }
 }

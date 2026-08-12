@@ -1,11 +1,51 @@
 @model JobBoardPlatform.Buisiness.Dtos.JobSeekerProfile.UpdateJobSeekerProfileDto
-@{ ViewData["Title"] = "ویرایش پروفایل"; }
-<h2>ویرایش پروفایل</h2>
-<form asp-action="Edit" method="post" class="col-md-6">
-    <div class="mb-3"><label asp-for="FullName" class="form-label"></label><input asp-for="FullName" class="form-control" /></div>
-    <div class="mb-3"><label asp-for="PhoneNumber" class="form-label"></label><input asp-for="PhoneNumber" class="form-control" /></div>
-    <div class="mb-3"><label asp-for="Skills" class="form-label"></label><input asp-for="Skills" class="form-control" /></div>
-    <div class="mb-3"><label asp-for="YearsOfExperience" class="form-label"></label><input asp-for="YearsOfExperience" class="form-control" /></div>
-    <div class="mb-3"><label asp-for="DesiredJobTitle" class="form-label"></label><input asp-for="DesiredJobTitle" class="form-control" /></div>
-    <button class="btn btn-primary">ذخیره</button>
-</form>
+@{ ViewData["Title"] = "Edit Profile"; }
+<div class="page-shell">
+    <div class="container" style="max-width:920px">
+        <div class="page-header">
+            <div class="page-header-copy"><h1>Edit Career Profile</h1><p>Accurate information improves your visibility throughout the hiring process.</p></div>
+            <a asp-action="Index" class="btn btn-ghost"><i class="fas fa-arrow-left me-1"></i> Cancel</a>
+        </div>
+        <section class="surface-card">
+            <div class="surface-card-header"><h2><i class="fas fa-user-edit me-1 text-primary"></i> Career Information</h2></div>
+            <div class="surface-card-body">
+                <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+                <form asp-action="Edit" method="post">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="FullName" class="form-label">Full Name</label>
+                            <input asp-for="FullName" class="form-control" placeholder="First and last name" />
+                            <span asp-validation-for="FullName"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="PhoneNumber" class="form-label">Phone Number</label>
+                            <input asp-for="PhoneNumber" class="form-control" placeholder="+1 555 123 4567" />
+                            <span asp-validation-for="PhoneNumber"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="DesiredJobTitle" class="form-label">Desired Job Title</label>
+                            <input asp-for="DesiredJobTitle" class="form-control" placeholder="For example, Backend Developer" />
+                            <span asp-validation-for="DesiredJobTitle"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="YearsOfExperience" class="form-label">Years of Experience</label>
+                            <input asp-for="YearsOfExperience" class="form-control" min="0" max="60" />
+                            <span asp-validation-for="YearsOfExperience"></span>
+                        </div>
+                        <div class="col-12">
+                            <label asp-for="Skills" class="form-label">Skills</label>
+                            <textarea asp-for="Skills" class="form-control" rows="4" placeholder="Separate skills with commas, for example: C#, SQL, Docker"></textarea>
+                            <span asp-validation-for="Skills"></span>
+                            <div class="form-text">Prioritize relevant skills you can demonstrate.</div>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2 mt-4 pt-3 border-top">
+                        <button type="submit" class="btn btn-primary px-4"><i class="fas fa-save me-1"></i> Save Changes</button>
+                        <a asp-action="Index" class="btn btn-ghost">Back</a>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

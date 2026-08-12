@@ -1,45 +1,33 @@
 @model List<JobPostingAdminDto>
-@{
-    ViewData["Title"] = "مدیریت آگهی‌ها";
-    Layout = "_AdminLayout";
-}
-<div class="card">
-    <div class="card-body">
-        <table class="table table-hover align-middle">
-            <thead><tr><th>عنوان</th><th>شرکت</th><th>وضعیت</th><th>ویژه</th><th></th></tr></thead>
+@{ ViewData["Title"] = "Job Postings"; Layout = "_AdminLayout"; }
+<div class="admin-page-head"><div><h1>Job Posting Management</h1><p>Monitor publishing status, featured placement, and job content.</p></div></div>
+<section class="admin-card no-padding">
+    <div class="admin-table-toolbar"><span class="admin-table-toolbar-copy">@Model.Count job postings registered.</span></div>
+    @if (Model.Any())
+    {
+        <div class="table-responsive"><table class="admin-table">
+            <thead><tr><th>Job</th><th>Employer</th><th>Status</th><th>Featured</th><th>Published</th><th class="text-end">Actions</th></tr></thead>
             <tbody>
-            @foreach (var jp in Model)
+            @foreach (var item in Model)
             {
                 <tr>
-                    <td>@jp.Title</td>
-                    <td>@jp.CompanyName</td>
-                    <td>
-                        @if (jp.IsActive)
-                        {
-                            <span class="badge bg-success">فعال</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-secondary">غیرفعال</span>
-                        }
-                    </td>
-                    <td>@(jp.IsFeatured ? "⭐" : "-")</td>
-                    <td>
-                        <form asp-action="ToggleStatus" asp-route-id="@jp.Id" method="post" class="d-inline">
-                            <input type="hidden" name="isActive" value="@(!jp.IsActive)" />
-                            <button class="btn btn-sm btn-outline-warning"><i class="bi bi-toggle2-on"></i></button>
-                        </form>
-                        <form asp-action="SetFeatured" asp-route-id="@jp.Id" method="post" class="d-inline">
-                            <input type="hidden" name="isFeatured" value="@(!jp.IsFeatured)" />
-                            <button class="btn btn-sm btn-outline-info"><i class="bi bi-star"></i></button>
-                        </form>
-                        <form asp-action="Delete" asp-route-id="@jp.Id" method="post" class="d-inline" onsubmit="return confirm('مطمئنید؟')">
-                            <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
-                        </form>
-                    </td>
+                    <td><div class="admin-person"><span class="admin-person-avatar"><i class="fas fa-briefcase"></i></span><span class="admin-person-copy"><strong>@item.Title</strong><small>@item.CompanyName</small></span></div></td>
+                    <td>@item.EmployerFullName</td>
+                    <td><span class="badge-soft @(item.IsActive ? "badge-success" : "badge-neutral")">@(item.IsActive ? "Active" : "Inactive")</span></td>
+                    <td>@if (item.IsFeatured) { <span class="badge-soft badge-featured"><i class="fas fa-star"></i> Featured</span> } else { <span class="text-muted">Standard</span> }</td>
+                    <td>@item.CreatedAt.ToString("MMM d, yyyy")</td>
+                    <td><div class="admin-actions">
+                        <form asp-action="ToggleStatus" asp-route-id="@item.Id" method="post"><input type="hidden" name="isActive" value="@(!item.IsActive)" /><button class="btn btn-ghost" type="submit" title="Change status"><i class="fas fa-toggle-@(item.IsActive ? "on" : "off")"></i></button></form>
+                        <form asp-action="SetFeatured" asp-route-id="@item.Id" method="post"><input type="hidden" name="isFeatured" value="@(!item.IsFeatured)" /><button class="btn @(item.IsFeatured ? "btn-ghost" : "btn-soft-primary")" type="submit" title="Change featured status"><i class="fas fa-star"></i></button></form>
+                        <form asp-action="Delete" asp-route-id="@item.Id" method="post" data-confirm="Delete the job posting '@item.Title'?"><button class="btn btn-soft-danger" type="submit" aria-label="Delete"><i class="fas fa-trash"></i></button></form>
+                    </div></td>
                 </tr>
             }
             </tbody>
-        </table>
-    </div>
-</div>
+        </table></div>
+    }
+    else
+    {
+        <div class="admin-empty"><i class="fas fa-briefcase"></i><h3>No job postings registered</h3><p>Employer job postings will appear here after publication.</p></div>
+    }
+</section>

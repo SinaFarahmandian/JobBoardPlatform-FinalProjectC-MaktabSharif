@@ -1,56 +1,221 @@
 @model PagedResult<JobPostingPublicDto>
 @{
-    ViewData["Title"] = "آگهی‌های شغلی";
-    var q = ViewData["Query"] as JobPostingSearchQueryDto;
+    ViewData["Title"] = "Find Jobs";
+    ViewData["BodyClass"] = "jobs-page";
+    var q = ViewData["Query"] as JobPostingSearchQueryDto ?? new JobPostingSearchQueryDto();
+    var hasAdvanced = !string.IsNullOrWhiteSpace(q.Category) || !string.IsNullOrWhiteSpace(q.Skill)
+                      || q.MinSalary.HasValue || q.MaxSalary.HasValue;
+
+    string EmploymentLabel(string? value) => value switch
+    {
+        "FullTime" => "Full-time",
+        "PartTime" => "Part-time",
+        "Contract" => "Contract",
+        "Internship" => "Internship",
+        "Remote" => "Remote",
+        _ => value ?? "Employment type not specified"
+    };
+
+    string RelativeDate(DateTime value)
+    {
+        var days = Math.Max(0, (DateTime.UtcNow.Date - value.Date).Days);
+        return days switch { 0 => "Today", 1 => "Yesterday", < 7 => $"{days} days ago", < 30 => $"{days / 7} weeks ago", _ => value.ToString("MMM d, yyyy") };
+    }
 }
-<div class="p-4 mb-4 bg-primary bg-gradient text-white rounded-3">
-    <h2><i class="bi bi-search"></i> فرصت‌های شغلی</h2>
-    <p class="mb-0">بین آگهی‌های فعال بگرد و همین حالا درخواست بده</p>
-</div>
 
-<form method="get" class="row g-2 mb-4">
-    <div class="col-md-3"><input name="Search" value="@q?.Search" class="form-control" placeholder="عنوان شغل" /></div>
-    <div class="col-md-2"><input name="City" value="@q?.City" class="form-control" placeholder="شهر" /></div>
-    <div class="col-md-2"><input name="Category" value="@q?.Category" class="form-control" placeholder="دسته‌بندی" /></div>
-    <div class="col-md-2"><input name="Skill" value="@q?.Skill" class="form-control" placeholder="مهارت" /></div>
-    <div class="col-md-2"><button class="btn btn-primary w-100"><i class="bi bi-search"></i> جستجو</button></div>
-</form>
+<section class="home-hero">
+    <div class="container hero-layout">
+        <div class="hero-copy">
+            <span class="eyebrow"><i class="fas fa-sparkles"></i> Every opportunity can start a new journey</span>
+            <h1>Find your next job on <span>CareerWay</span></h1>
+            <p>Explore trusted opportunities, learn about companies, and apply directly with your career profile.</p>
+        </div>
 
-@foreach (var job in Model.Items)
-{
-    <div class="card mb-3 @(job.IsFeatured ? "border-warning border-2" : "")">
-        <div class="card-body">
-            <div class="d-flex justify-content-between">
-                <h5 class="card-title">
-                    @job.Title
-                    @if (job.IsFeatured)
-                    {
-                        <span class="badge bg-warning text-dark"><i class="bi bi-star-fill"></i> ویژه</span>
-                    }
-                </h5>
+        <div class="hero-visual" aria-hidden="true">
+            <div class="hero-dashboard-card">
+                <div class="visual-bar"><div class="visual-dots"><i></i><i></i><i></i></div><div class="visual-pill"></div></div>
+                <div class="visual-job featured">
+                    <span class="visual-job-logo">K</span>
+                    <span class="visual-job-copy"><strong>Senior Backend Developer</strong><span>New York · Full-time</span></span>
+                    <i class="fas fa-bookmark"></i>
+                </div>
+                <div class="visual-job">
+                    <span class="visual-job-logo" style="background:#12b886">D</span>
+                    <span class="visual-job-copy"><strong>UX Designer</strong><span>Remote · Product</span></span>
+                    <i class="far fa-bookmark"></i>
+                </div>
+                <div class="visual-job">
+                    <span class="visual-job-logo" style="background:#f59f00">M</span>
+                    <span class="visual-job-copy"><strong>Digital Marketing Specialist</strong><span>Chicago · Part-time</span></span>
+                    <i class="far fa-bookmark"></i>
+                </div>
             </div>
-            <p class="text-muted mb-2">
-                <i class="bi bi-building"></i> @job.CompanyName
-                &nbsp;|&nbsp; <i class="bi bi-geo-alt"></i> @job.Location
-                &nbsp;|&nbsp; <i class="bi bi-briefcase"></i> @job.EmploymentType
-            </p>
-            <a asp-action="Details" asp-route-id="@job.Id" class="btn btn-sm btn-outline-primary">مشاهده جزئیات</a>
+            <span class="hero-float hero-float-top"><i class="fas fa-check"></i> Verified opportunities</span>
+            <span class="hero-float hero-float-bottom"><i class="fas fa-bolt"></i> Quick applications</span>
         </div>
     </div>
-}
+</section>
 
-@if (!Model.Items.Any())
-{
-    <div class="alert alert-info"><i class="bi bi-info-circle"></i> آگهی‌ای با این مشخصات پیدا نشد.</div>
-}
+<div class="container search-wrap">
+    <form method="get" asp-action="Index" class="job-search-panel" role="search">
+        <div class="job-search-grid">
+            <div class="search-field">
+                <i class="fas fa-search" aria-hidden="true"></i>
+                <label class="visually-hidden" for="jobSearch">Job title or keyword</label>
+                <input id="jobSearch" name="Search" value="@q.Search" class="form-control" placeholder="Job title or keyword" />
+            </div>
+            <div class="search-field">
+                <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+                <label class="visually-hidden" for="jobCity">City or location</label>
+                <input id="jobCity" name="City" value="@q.City" class="form-control" placeholder="City or location" />
+            </div>
+            <div class="search-field">
+                <i class="fas fa-briefcase" aria-hidden="true"></i>
+                <label class="visually-hidden" for="employmentType">Employment type</label>
+                <select id="employmentType" name="EmploymentType" class="form-select">
+                    <option value="">All employment types</option>
+                    <option value="FullTime" selected="@(q.EmploymentType == "FullTime")">Full-time</option>
+                    <option value="PartTime" selected="@(q.EmploymentType == "PartTime")">Part-time</option>
+                    <option value="Contract" selected="@(q.EmploymentType == "Contract")">Contract</option>
+                    <option value="Internship" selected="@(q.EmploymentType == "Internship")">Internship</option>
+                    <option value="Remote" selected="@(q.EmploymentType == "Remote")">Remote</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-search me-1"></i> Search</button>
+        </div>
 
-<nav>
-    <ul class="pagination">
-        @for (int p = 1; p <= Model.TotalPages; p++)
-        {
-            <li class="page-item @(p == Model.Page ? "active" : "")">
-                <a class="page-link" href="@Url.Action("Index", new { Page = p, q?.Search, q?.City, q?.Category, q?.Skill })">@p</a>
-            </li>
-        }
-    </ul>
-</nav>
+        <div class="advanced-search @(hasAdvanced ? "is-open" : "")" data-advanced-panel>
+            <div class="search-field">
+                <i class="fas fa-layer-group"></i>
+                <label class="visually-hidden" for="jobCategory">Category</label>
+                <input id="jobCategory" name="Category" value="@q.Category" class="form-control" placeholder="Job category" />
+            </div>
+            <div class="search-field">
+                <i class="fas fa-code"></i>
+                <label class="visually-hidden" for="jobSkill">Skill</label>
+                <input id="jobSkill" name="Skill" value="@q.Skill" class="form-control" placeholder="Required skill" />
+            </div>
+            <div class="row g-2">
+                <div class="col-6"><label class="visually-hidden" for="minSalary">Minimum salary</label><input id="minSalary" type="number" min="0" name="MinSalary" value="@q.MinSalary" class="form-control" placeholder="Minimum salary" /></div>
+                <div class="col-6"><label class="visually-hidden" for="maxSalary">Maximum salary</label><input id="maxSalary" type="number" min="0" name="MaxSalary" value="@q.MaxSalary" class="form-control" placeholder="Maximum salary" /></div>
+            </div>
+        </div>
+
+        <div class="search-footer">
+            <button type="button" data-advanced-toggle aria-expanded="@(hasAdvanced.ToString().ToLowerInvariant())">
+                <i class="fas fa-sliders-h me-1"></i><span>@(hasAdvanced ? "Hide advanced filters" : "More filters")</span>
+            </button>
+            @if (!string.IsNullOrWhiteSpace(q.Search) || !string.IsNullOrWhiteSpace(q.City) || !string.IsNullOrWhiteSpace(q.EmploymentType) || hasAdvanced)
+            {
+                <a asp-action="Index"><i class="fas fa-times me-1"></i> Clear filters</a>
+            }
+        </div>
+    </form>
+</div>
+
+<section class="content-section">
+    <div class="container">
+        <div class="section-heading">
+            <div>
+                <h2>@(Model.Items.Any() ? "Latest job opportunities" : "No results found")</h2>
+                <p>@(Model.Items.Any() ? "Opportunities that could become the next step in your career." : "Adjust your filters and try searching again.")</p>
+            </div>
+            <span class="result-count">@Model.TotalCount active jobs</span>
+        </div>
+
+        <div class="jobs-layout">
+            <div>
+                @if (Model.Items.Any())
+                {
+                    <div class="jobs-list">
+                        @foreach (var job in Model.Items)
+                        {
+                            var companyInitial = string.IsNullOrWhiteSpace(job.CompanyName) ? "C" : job.CompanyName.Trim().Substring(0, 1);
+                            <a asp-action="Details" asp-route-id="@job.Id" class="job-card @(job.IsFeatured ? "is-featured" : "")">
+                                <span class="job-logo">@companyInitial</span>
+                                <span class="job-card-main">
+                                    <span class="job-title-row">
+                                        <h3>@job.Title</h3>
+                                        @if (job.IsFeatured)
+                                        {
+                                            <span class="badge-soft badge-featured"><i class="fas fa-star"></i> Featured</span>
+                                        }
+                                    </span>
+                                    <span class="job-company">@job.CompanyName</span>
+                                    <span class="job-meta">
+                                        <span><i class="fas fa-map-marker-alt"></i> @(string.IsNullOrWhiteSpace(job.Location) ? "Not specified" : job.Location)</span>
+                                        <span><i class="fas fa-clock"></i> @EmploymentLabel(job.EmploymentType)</span>
+                                        @if (!string.IsNullOrWhiteSpace(job.Category))
+                                        {
+                                            <span><i class="fas fa-layer-group"></i> @job.Category</span>
+                                        }
+                                    </span>
+                                </span>
+                                <span class="job-card-side">
+                                    <time datetime="@job.CreatedAt.ToString("O")">@RelativeDate(job.CreatedAt)</time>
+                                    <span class="job-arrow"><i class="fas fa-arrow-right"></i></span>
+                                </span>
+                            </a>
+                        }
+                    </div>
+
+                    @if (Model.TotalPages > 1)
+                    {
+                        <nav class="pagination-wrap" aria-label="Job results pagination">
+                            <ul class="pagination">
+                                <li class="page-item @(Model.Page <= 1 ? "disabled" : "")">
+                                    <a class="page-link" aria-label="Previous page" href="@Url.Action("Index", new { Page = Model.Page - 1, q.Search, q.City, q.Category, q.Skill, q.EmploymentType, q.MinSalary, q.MaxSalary })"><i class="fas fa-chevron-left"></i></a>
+                                </li>
+                                @for (var p = Math.Max(1, Model.Page - 2); p <= Math.Min(Model.TotalPages, Model.Page + 2); p++)
+                                {
+                                    <li class="page-item @(p == Model.Page ? "active" : "")"><a class="page-link" href="@Url.Action("Index", new { Page = p, q.Search, q.City, q.Category, q.Skill, q.EmploymentType, q.MinSalary, q.MaxSalary })">@p</a></li>
+                                }
+                                <li class="page-item @(Model.Page >= Model.TotalPages ? "disabled" : "")">
+                                    <a class="page-link" aria-label="Next page" href="@Url.Action("Index", new { Page = Model.Page + 1, q.Search, q.City, q.Category, q.Skill, q.EmploymentType, q.MinSalary, q.MaxSalary })"><i class="fas fa-chevron-right"></i></a>
+                                </li>
+                            </ul>
+                        </nav>
+                    }
+                }
+                else
+                {
+                    <div class="empty-state">
+                        <span class="empty-state-icon"><i class="fas fa-search"></i></span>
+                        <h3>No opportunities matched your search</h3>
+                        <p>Try a broader search or fewer filters. New opportunities are added to CareerWay regularly.</p>
+                        <a asp-action="Index" class="btn btn-primary">View All Jobs</a>
+                    </div>
+                }
+            </div>
+
+            <aside class="jobs-sidebar">
+                @if (!User.Identity?.IsAuthenticated ?? true)
+                {
+                    <div class="sidebar-card">
+                        <span class="sidebar-card-icon"><i class="fas fa-user-plus"></i></span>
+                        <h3>Get your resume ready</h3>
+                        <p>Create a job seeker account, keep your resume handy, and track every application in one place.</p>
+                        <a asp-controller="Account" asp-action="RegisterJobSeeker" class="btn btn-primary">Start for Free</a>
+                    </div>
+                }
+                else if (User.IsInRole("Employer"))
+                {
+                    <div class="sidebar-card">
+                        <span class="sidebar-card-icon"><i class="fas fa-bullhorn"></i></span>
+                        <h3>Find your team's next great hire</h3>
+                        <p>Publish a new opportunity and review applications in an organized workspace.</p>
+                        <a asp-controller="EmployerJobPostings" asp-action="Create" class="btn btn-primary">Post a New Job</a>
+                    </div>
+                }
+                <div class="sidebar-card">
+                    <h3>Build a stronger application</h3>
+                    <ul class="sidebar-tips">
+                        <li><i class="fas fa-check-circle"></i><span>Tailor your resume to the role.</span></li>
+                        <li><i class="fas fa-check-circle"></i><span>Read the description and required skills carefully.</span></li>
+                        <li><i class="fas fa-check-circle"></i><span>Write a concise, clear, and personal cover letter.</span></li>
+                    </ul>
+                </div>
+            </aside>
+        </div>
+    </div>
+</section>

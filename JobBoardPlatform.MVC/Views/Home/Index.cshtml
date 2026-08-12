@@ -1,8 +1,16 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Home";
 }
-
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section class="home-hero">
+    <div class="container py-4 text-center position-relative" style="z-index:1">
+        <span class="eyebrow"><i class="fas fa-briefcase"></i> CareerWay, your career companion</span>
+        <div class="hero-copy mx-auto">
+            <h1 class="mx-auto">From job search to a <span>fresh start</span></h1>
+            <p class="mx-auto">Discover opportunities, build a career profile, and follow every application with clarity.</p>
+        </div>
+        <div class="d-flex flex-wrap justify-content-center gap-2 mt-4">
+            <a asp-controller="Public" asp-action="Index" class="btn btn-primary px-4">Explore Jobs</a>
+            <a asp-controller="Account" asp-action="RegisterEmployer" class="btn btn-ghost px-4">Register as an Employer</a>
+        </div>
+    </div>
+</section>

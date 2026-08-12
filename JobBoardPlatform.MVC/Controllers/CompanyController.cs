@@ -28,7 +28,7 @@ public class CompanyController : Controller
     {
         if (!ModelState.IsValid) return View(dto);
         await _service.UpdateMyCompanyAsync(EmployerId, dto);
-        TempData["Success"] = "اطلاعات شرکت به‌روزرسانی شد";
+        TempData["Success"] = "The company profile has been updated";
         return RedirectToAction(nameof(Index));
     }
 }

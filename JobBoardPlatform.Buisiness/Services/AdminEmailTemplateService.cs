@@ -18,7 +18,7 @@ public class AdminEmailTemplateService : IAdminEmailTemplateService
 
     public async Task<EmailTemplateDto> UpdateAsync(string key, UpdateEmailTemplateDto dto)
     {
-        var template = await _repo.GetByKeyAsync(key) ?? throw new NotFoundException("قالب ایمیل پیدا نشد");
+        var template = await _repo.GetByKeyAsync(key) ?? throw new NotFoundException("The email template was not found");
         template.Subject = dto.Subject;
         template.Body = dto.Body;
         template.IsEnabled = dto.IsEnabled;

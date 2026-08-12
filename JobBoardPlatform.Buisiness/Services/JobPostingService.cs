@@ -72,10 +72,10 @@ public class JobPostingService : IJobPostingService
     private async Task<JobPosting> GetOwnedAsync(int employerId, int jobPostingId)
     {
         var posting = await _repo.GetByIdAsync(jobPostingId)
-            ?? throw new NotFoundException("آگهی پیدا نشد");
+            ?? throw new NotFoundException("The job posting was not found");
 
         if (posting.EmployerId != employerId)
-            throw new ForbiddenAccessException("شما به این آگهی دسترسی ندارید");
+            throw new ForbiddenAccessException("You do not have access to this job posting");
 
         return posting;
     }

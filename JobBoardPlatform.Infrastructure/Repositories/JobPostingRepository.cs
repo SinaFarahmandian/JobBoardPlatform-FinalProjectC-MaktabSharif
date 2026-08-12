@@ -28,7 +28,10 @@ public class JobPostingRepository : IJobPostingRepository
     {
         var q = _context.JobPostings
             .Include(jp => jp.Employer).ThenInclude(e => e.Company)
-            .Where(jp => jp.IsActive);
+            .Where(jp => jp.IsActive
+                         && (jp.ExpiresAt == null || jp.ExpiresAt > DateTime.UtcNow)
+                         && jp.Employer.IsActive
+                         && jp.Employer.IsApproved);
 
         if (!string.IsNullOrWhiteSpace(query.Search))
             q = q.Where(jp => jp.Title.Contains(query.Search));
@@ -66,7 +69,11 @@ public class JobPostingRepository : IJobPostingRepository
     public async Task<JobPosting?> GetActiveByIdAsync(int id) =>
         await _context.JobPostings
             .Include(jp => jp.Employer).ThenInclude(e => e.Company)
-            .FirstOrDefaultAsync(jp => jp.Id == id && jp.IsActive);
+            .FirstOrDefaultAsync(jp => jp.Id == id
+                                       && jp.IsActive
+                                       && (jp.ExpiresAt == null || jp.ExpiresAt > DateTime.UtcNow)
+                                       && jp.Employer.IsActive
+                                       && jp.Employer.IsApproved);
     
     public async Task AddAsync(JobPosting posting)
     {

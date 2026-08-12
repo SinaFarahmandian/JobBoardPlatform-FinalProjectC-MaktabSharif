@@ -21,7 +21,7 @@ public class AdminEmployersController : Controller
     public async Task<IActionResult> Approve(int id)
     {
         await _service.ApproveAsync(id);
-        TempData["Success"] = "کارفرما تأیید شد";
+        TempData["Success"] = "The employer has been approved";
         return RedirectToAction(nameof(Index));
     }
 
@@ -29,7 +29,7 @@ public class AdminEmployersController : Controller
     public async Task<IActionResult> Reject(int id)
     {
         await _service.RejectAsync(id);
-        TempData["Success"] = "کارفرما رد شد";
+        TempData["Success"] = "The employer has been rejected";
         return RedirectToAction(nameof(Index));
     }
 }

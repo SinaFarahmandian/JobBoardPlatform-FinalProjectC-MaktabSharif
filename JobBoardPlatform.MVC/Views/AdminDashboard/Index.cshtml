@@ -1,66 +1,69 @@
 @model DashboardStatsDto
 @{
-    ViewData["Title"] = "داشبورد ادمین";
+    ViewData["Title"] = "Overview";
     Layout = "_AdminLayout";
+    var labels = System.Text.Json.JsonSerializer.Serialize(Model.ApplicationsByStatus.Keys);
+    var values = System.Text.Json.JsonSerializer.Serialize(Model.ApplicationsByStatus.Values);
+    string StatusLabel(string status) => status switch { "Pending" => "New", "Reviewing" => "Under Review", "Interview" => "Interview", "Accepted" => "Accepted", "Rejected" => "Rejected", "Cancelled" => "Withdrawn", _ => status };
+    string DotColor(string status) => status switch { "Pending" => "#f59f00", "Reviewing" => "#2870ed", "Interview" => "#5b4df7", "Accepted" => "#12b886", "Rejected" => "#e5484d", _ => "#9b9aad" };
 }
-<div class="row g-3">
-    <div class="col-md-3">
-        <div class="card admin-stat-card p-3">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <div class="text-muted small">کل کارجوها</div>
-                    <h3 class="mb-0">@Model.TotalJobSeekers</h3>
-                </div>
-                <i class="bi bi-people-fill fs-1 text-primary"></i>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card admin-stat-card p-3">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <div class="text-muted small">کل کارفرماها</div>
-                    <h3 class="mb-0">@Model.TotalEmployers</h3>
-                </div>
-                <i class="bi bi-building fs-1 text-success"></i>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card admin-stat-card p-3">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <div class="text-muted small">آگهی فعال</div>
-                    <h3 class="mb-0">@Model.ActiveJobPostings</h3>
-                </div>
-                <i class="bi bi-file-earmark-text-fill fs-1 text-info"></i>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card admin-stat-card p-3">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <div class="text-muted small">در انتظار تأیید</div>
-                    <h3 class="mb-0">@Model.PendingEmployerApprovals</h3>
-                </div>
-                <i class="bi bi-hourglass-split fs-1 text-warning"></i>
-            </div>
-        </div>
-    </div>
+<div class="admin-page-head">
+    <div><h1>Welcome 👋</h1><p>A live view of platform activity and hiring workflows.</p></div>
+    <a asp-controller="Public" asp-action="Index" class="btn btn-ghost"><i class="fas fa-external-link-alt me-1"></i> View Website</a>
 </div>
 
-<div class="card mt-4">
-    <div class="card-header"><i class="bi bi-bar-chart-fill"></i> درخواست‌ها به تفکیک وضعیت</div>
-    <div class="card-body">
-        <ul class="list-group list-group-flush">
-            @foreach (var kv in Model.ApplicationsByStatus)
-            {
-                <li class="list-group-item d-flex justify-content-between">
-                    <span>@kv.Key</span>
-                    <span class="badge bg-secondary">@kv.Value</span>
-                </li>
-            }
-        </ul>
-    </div>
+<div class="admin-stats">
+    <div class="admin-stat primary"><span class="admin-stat-icon"><i class="fas fa-users"></i></span><span class="admin-stat-copy"><small>Total Job Seekers</small><strong>@Model.TotalJobSeekers.ToString("N0")</strong><span>registered accounts</span></span></div>
+    <div class="admin-stat success"><span class="admin-stat-icon"><i class="fas fa-building"></i></span><span class="admin-stat-copy"><small>Total Employers</small><strong>@Model.TotalEmployers.ToString("N0")</strong><span>active and pending companies</span></span></div>
+    <div class="admin-stat info"><span class="admin-stat-icon"><i class="fas fa-briefcase"></i></span><span class="admin-stat-copy"><small>Active Jobs</small><strong>@Model.ActiveJobPostings.ToString("N0")</strong><span>@Model.InactiveJobPostings inactive jobs</span></span></div>
+    <div class="admin-stat warning"><span class="admin-stat-icon"><i class="fas fa-user-clock"></i></span><span class="admin-stat-copy"><small>Pending Approval</small><strong>@Model.PendingEmployerApprovals.ToString("N0")</strong><span>employer accounts</span></span></div>
 </div>
+
+<div class="admin-grid">
+    <section class="admin-card admin-col-8">
+        <div class="admin-card-head"><div><h2>Application Status</h2><p>Applications across each stage of the hiring pipeline</p></div><span class="badge-soft badge-primary">Live Report</span></div>
+        <div class="admin-card-body"><div class="chart-wrap"><canvas id="statusChart" aria-label="Application status chart"></canvas></div></div>
+    </section>
+    <section class="admin-card admin-col-4">
+        <div class="admin-card-head"><div><h2>Status Breakdown</h2><p>Applications at each stage</p></div></div>
+        <div class="admin-card-body">
+            @if (Model.ApplicationsByStatus.Any())
+            {
+                <div class="status-breakdown">
+                    @foreach (var item in Model.ApplicationsByStatus)
+                    {
+                        <div class="status-breakdown-row"><span class="status-breakdown-label"><i class="status-breakdown-dot" style="--dot-color:@DotColor(item.Key)"></i>@StatusLabel(item.Key)</span><strong>@item.Value</strong></div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="admin-empty p-3"><i class="fas fa-chart-bar"></i><h3>No data yet</h3><p>Status insights will appear here once applications are submitted.</p></div>
+            }
+        </div>
+    </section>
+    <section class="admin-card admin-col-12">
+        <div class="admin-card-body d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div><h2 class="h6 fw-bold mb-1">@Model.PendingEmployerApprovals accounts need review</h2><p class="text-muted small mb-0">Review employer requests so approved companies can publish jobs.</p></div>
+            <a asp-controller="AdminEmployers" asp-action="Index" asp-route-onlyPending="true" class="btn btn-primary">Review Employers <i class="fas fa-arrow-right ms-1"></i></a>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <script>
+        (() => {
+            const sourceLabels = @Html.Raw(labels);
+            const labelMap = { Pending: "New", Reviewing: "Under Review", Interview: "Interview", Accepted: "Accepted", Rejected: "Rejected", Cancelled: "Withdrawn" };
+            const labels = sourceLabels.map(label => labelMap[label] || label);
+            const values = @Html.Raw(values);
+            const canvas = document.getElementById("statusChart");
+            if (!canvas || !values.length) return;
+            new Chart(canvas, {
+                type: "bar",
+                data: { labels, datasets: [{ data: values, backgroundColor: ["#f59f00", "#2870ed", "#5b4df7", "#12b886", "#e5484d", "#9b9aad"], borderWidth: 0, barPercentage: .58 }] },
+                options: { maintainAspectRatio: false, legend: { display: false }, scales: { xAxes: [{ gridLines: { display: false }, ticks: { fontFamily: "Inter", fontColor: "#74738a" } }], yAxes: [{ ticks: { beginAtZero: true, precision: 0, fontFamily: "Inter", fontColor: "#9b9aad" }, gridLines: { color: "#efeff4", zeroLineColor: "#efeff4" } }] }, tooltips: { titleFontFamily: "Inter", bodyFontFamily: "Inter", rtl: false } }
+            });
+        })();
+    </script>
+}

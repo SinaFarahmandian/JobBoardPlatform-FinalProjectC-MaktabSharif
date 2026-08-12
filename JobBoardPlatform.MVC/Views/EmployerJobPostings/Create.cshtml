@@ -1,13 +1,18 @@
 @model JobBoardPlatform.Buisiness.Dtos.JobPosting.CreateJobPostingDto
-@{ ViewData["Title"] = "ساخت آگهی"; }
-<form method="post" class="col-md-6">
-    <div class="mb-3"><label asp-for="Title" class="form-label"></label><input asp-for="Title" class="form-control" /></div>
-    <div class="mb-3"><label asp-for="Description" class="form-label"></label><textarea asp-for="Description" class="form-control"></textarea></div>
-    <div class="mb-3"><label asp-for="Location" class="form-label"></label><input asp-for="Location" class="form-control" /></div>
-    <div class="mb-3"><label asp-for="EmploymentType" class="form-label"></label><input asp-for="EmploymentType" class="form-control" /></div>
-    <div class="mb-3"><label asp-for="SalaryMin" class="form-label"></label><input asp-for="SalaryMin" class="form-control" /></div>
-    <div class="mb-3"><label asp-for="SalaryMax" class="form-label"></label><input asp-for="SalaryMax" class="form-control" /></div>
-    <div class="mb-3"><label asp-for="Category" class="form-label"></label><input asp-for="Category" class="form-control" /></div>
-    <div class="mb-3"><label asp-for="Skills" class="form-label"></label><input asp-for="Skills" class="form-control" /></div>
-    <button class="btn btn-primary">ذخیره</button>
-</form>
+@{
+    ViewData["Title"] = "Post a New Job";
+    ViewData["SubmitLabel"] = "Publish Job";
+}
+<div class="page-shell">
+    <div class="container" style="max-width:980px">
+        <div class="page-header"><div class="page-header-copy"><span class="eyebrow"><i class="fas fa-bullhorn"></i> Your team's next opportunity</span><h1>Post a New Job</h1><p>Accurate information helps candidates apply with greater confidence.</p></div><a asp-action="Index" class="btn btn-ghost"><i class="fas fa-arrow-left me-1"></i> Back</a></div>
+        <section class="surface-card">
+            <div class="surface-card-header"><h2><i class="fas fa-briefcase me-1 text-primary"></i> Job Details</h2><span class="badge-soft badge-info">Complete all required fields</span></div>
+            <div class="surface-card-body">
+                <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+                <form asp-action="Create" method="post"><partial name="_JobPostingForm" model="Model" /></form>
+            </div>
+        </section>
+    </div>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

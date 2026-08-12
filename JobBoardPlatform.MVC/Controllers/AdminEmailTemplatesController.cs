@@ -19,7 +19,8 @@ public class AdminEmailTemplatesController : Controller
     public async Task<IActionResult> Edit(string key)
     {
         var templates = await _service.GetAllAsync();
-        var t = templates.First(x => x.Key == key);
+        var t = templates.FirstOrDefault(x => x.Key == key);
+        if (t == null) return NotFound();
         ViewData["Key"] = key;
         return View(new UpdateEmailTemplateDto { Subject = t.Subject, Body = t.Body, IsEnabled = t.IsEnabled });
     }
@@ -27,8 +28,14 @@ public class AdminEmailTemplatesController : Controller
     [HttpPost("{key}/edit")]
     public async Task<IActionResult> Edit(string key, UpdateEmailTemplateDto dto)
     {
+        if (!ModelState.IsValid)
+        {
+            ViewData["Key"] = key;
+            return View(dto);
+        }
+
         await _service.UpdateAsync(key, dto);
-        TempData["Success"] = "قالب ایمیل به‌روزرسانی شد";
+        TempData["Success"] = "The email template has been updated";
         return RedirectToAction(nameof(Index));
     }
 }

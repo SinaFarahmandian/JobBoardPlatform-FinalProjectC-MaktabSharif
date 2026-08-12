@@ -1,38 +1,118 @@
 @model JobPostingPublicDto
-@{ ViewData["Title"] = Model.Title; }
-<div class="card">
-    <div class="card-body">
-        <h2>
-            @Model.Title
-            @if (Model.IsFeatured)
-            {
-                <span class="badge bg-warning text-dark"><i class="bi bi-star-fill"></i> ویژه</span>
-            }
-        </h2>
-        <p class="text-muted">
-            <i class="bi bi-building"></i> @Model.CompanyName
-            &nbsp;|&nbsp; <i class="bi bi-geo-alt"></i> @Model.Location
-            &nbsp;|&nbsp; <i class="bi bi-briefcase"></i> @Model.EmploymentType
-        </p>
-        <hr />
-        <p>@Model.Description</p>
-        <p><i class="bi bi-cash-coin"></i> <strong>حقوق:</strong> @Model.SalaryMin تا @Model.SalaryMax</p>
-        <p><i class="bi bi-tag"></i> <strong>دسته‌بندی:</strong> @Model.Category</p>
-        <p><i class="bi bi-stars"></i> <strong>مهارت‌ها:</strong> @Model.Skills</p>
+@{
+    ViewData["Title"] = Model.Title;
+    var companyInitial = string.IsNullOrWhiteSpace(Model.CompanyName) ? "C" : Model.CompanyName.Trim().Substring(0, 1);
+    var skills = (Model.Skills ?? string.Empty)
+        .Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+    var employmentLabel = Model.EmploymentType switch
+    {
+        "FullTime" => "Full-time",
+        "PartTime" => "Part-time",
+        "Contract" => "Contract",
+        "Internship" => "Internship",
+        "Remote" => "Remote",
+        _ => Model.EmploymentType
+    };
+    var salary = Model.SalaryMin.HasValue || Model.SalaryMax.HasValue
+        ? $"{(Model.SalaryMin?.ToString("N0") ?? "Negotiable")} to {(Model.SalaryMax?.ToString("N0") ?? "Negotiable")}"
+        : "Negotiable";
+}
 
-        @if (User.IsInRole("JobSeeker"))
-        {
-            <form asp-controller="JobSeekerApplications" asp-action="Apply" method="post" class="mt-3">
-                <input type="hidden" name="JobPostingId" value="@Model.Id" />
-                <div class="mb-3">
-                    <textarea name="CoverLetter" class="form-control" placeholder="متن معرفی (اختیاری)"></textarea>
+<div class="page-shell">
+    <div class="container">
+        <div class="page-header">
+            <div class="page-header-copy">
+                <a asp-action="Index" class="text-muted small mb-2"><i class="fas fa-arrow-left me-1"></i> Back to Jobs</a>
+                <h1>Job Details</h1>
+                <p>Read the full description and get ready for your next step.</p>
+            </div>
+        </div>
+
+        <div class="detail-layout">
+            <article class="surface-card">
+                <header class="job-detail-hero">
+                    <div class="job-detail-head">
+                        <span class="job-detail-logo">@companyInitial</span>
+                        <div>
+                            <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                                <h1>@Model.Title</h1>
+                                @if (Model.IsFeatured)
+                                {
+                                    <span class="badge-soft badge-featured"><i class="fas fa-star"></i> Featured Job</span>
+                                }
+                            </div>
+                            <p><i class="fas fa-building me-1"></i> @Model.CompanyName</p>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="job-detail-body">
+                    <div class="detail-metrics">
+                        <div class="metric"><span class="metric-icon"><i class="fas fa-map-marker-alt"></i></span><span class="metric-copy"><small>Location</small><strong>@Model.Location</strong></span></div>
+                        <div class="metric"><span class="metric-icon"><i class="fas fa-clock"></i></span><span class="metric-copy"><small>Employment Type</small><strong>@employmentLabel</strong></span></div>
+                        <div class="metric"><span class="metric-icon"><i class="fas fa-wallet"></i></span><span class="metric-copy"><small>Salary Range</small><strong>@salary</strong></span></div>
+                        <div class="metric"><span class="metric-icon"><i class="fas fa-layer-group"></i></span><span class="metric-copy"><small>Category</small><strong>@(Model.Category ?? "Other")</strong></span></div>
+                    </div>
+
+                    <div class="prose">
+                        <h2>About This Role</h2>
+                        <p>@Model.Description</p>
+
+                        @if (skills.Length > 0)
+                        {
+                            <h2>Required Skills</h2>
+                            <div class="skills-list">
+                                @foreach (var skill in skills)
+                                {
+                                    <span class="skill-chip">@skill</span>
+                                }
+                            </div>
+                        }
+
+                        <h2>Posted</h2>
+                        <p>This opportunity was published on @Model.CreatedAt.ToString("MMMM d, yyyy").</p>
+                    </div>
                 </div>
-                <button class="btn btn-success"><i class="bi bi-send"></i> ارسال درخواست</button>
-            </form>
-        }
-        else if (User.Identity?.IsAuthenticated != true)
-        {
-            <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary mt-3">برای ارسال درخواست وارد شوید</a>
-        }
+            </article>
+
+            <aside>
+                <div class="surface-card apply-card">
+                    @if (User.IsInRole("JobSeeker"))
+                    {
+                        <span class="apply-card-icon"><i class="fas fa-paper-plane"></i></span>
+                        <h2>Ready to apply?</h2>
+                        <p>Tell the employer briefly why your experience is a good fit for this role.</p>
+                        <form asp-controller="JobSeekerApplications" asp-action="Apply" method="post">
+                            <input type="hidden" name="JobPostingId" value="@Model.Id" />
+                            <label for="coverLetter" class="form-label">Cover Letter <span class="text-muted fw-normal">(optional)</span></label>
+                            <textarea id="coverLetter" name="CoverLetter" maxlength="3000" class="form-control" placeholder="Introduce yourself briefly and professionally..."></textarea>
+                            <button class="btn btn-success" type="submit"><i class="fas fa-paper-plane me-1"></i> Submit Application</button>
+                        </form>
+                        <span class="apply-note"><i class="fas fa-lock"></i> Your information is shared only with this employer.</span>
+                    }
+                    else if (User.Identity?.IsAuthenticated != true)
+                    {
+                        <span class="apply-card-icon"><i class="fas fa-user-lock"></i></span>
+                        <h2>Sign in to apply</h2>
+                        <p>Sign in with a job seeker account or create a new one in less than two minutes.</p>
+                        <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Context.Request.Path" class="btn btn-primary">Sign In</a>
+                        <a asp-controller="Account" asp-action="RegisterJobSeeker" class="btn btn-ghost mt-2">Create Job Seeker Account</a>
+                    }
+                    else
+                    {
+                        <span class="apply-card-icon"><i class="fas fa-info"></i></span>
+                        <h2>Public Job View</h2>
+                        <p>Only job seeker accounts can submit applications.</p>
+                        <a asp-action="Index" class="btn btn-soft-primary">Explore Other Jobs</a>
+                    }
+                </div>
+
+                <div class="sidebar-card mt-3">
+                    <span class="sidebar-card-icon"><i class="fas fa-building"></i></span>
+                    <h3>About @Model.CompanyName</h3>
+                    <p>This job was published directly by the company's hiring team on CareerWay.</p>
+                </div>
+            </aside>
+        </div>
     </div>
 </div>

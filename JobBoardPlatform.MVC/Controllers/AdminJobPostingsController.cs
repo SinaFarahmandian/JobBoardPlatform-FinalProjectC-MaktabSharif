@@ -26,7 +26,7 @@ public class AdminJobPostingsController : Controller
     public async Task<IActionResult> Delete(int id)
     {
         await _service.DeleteAsync(id);
-        TempData["Success"] = "آگهی حذف شد";
+        TempData["Success"] = "The job posting has been deleted";
         return RedirectToAction(nameof(Index));
     }
 

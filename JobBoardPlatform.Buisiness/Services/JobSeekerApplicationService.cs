@@ -22,13 +22,13 @@ public class JobSeekerApplicationService : IJobSeekerApplicationService
     public async Task<JobSeekerApplicationDto> ApplyAsync(int jobSeekerId, CreateJobApplicationDto dto)
     {
         var posting = await _postingRepo.GetByIdAsync(dto.JobPostingId)
-            ?? throw new NotFoundException("آگهی پیدا نشد");
+            ?? throw new NotFoundException("The job posting was not found");
 
         if (!posting.IsActive)
-            throw new BadRequestException("این آگهی دیگر فعال نیست");
+            throw new BadRequestException("This job posting is no longer active");
 
         if (await _appRepo.ExistsAsync(jobSeekerId, dto.JobPostingId))
-            throw new BadRequestException("شما قبلاً برای این آگهی درخواست ارسال کرده‌اید");
+            throw new BadRequestException("You have already applied for this job");
 
         var application = new JobApplication(dto.JobPostingId, jobSeekerId, dto.CoverLetter);
         await _appRepo.AddAsync(application);
@@ -56,7 +56,7 @@ public class JobSeekerApplicationService : IJobSeekerApplicationService
         var app = await GetOwnedAsync(jobSeekerId, applicationId);
 
         if (app.Status != ApplicationStatus.Pending)
-            throw new BadRequestException("فقط درخواستی که در وضعیت Pending است قابل لغو است");
+            throw new BadRequestException("Only an application with Pending status can be withdrawn");
 
         app.Status = ApplicationStatus.Cancelled;
         app.UpdatedAt = DateTime.UtcNow;
@@ -67,9 +67,9 @@ public class JobSeekerApplicationService : IJobSeekerApplicationService
 
     private async Task<JobApplication> GetOwnedAsync(int jobSeekerId, int applicationId)
     {
-        var app = await _appRepo.GetByIdAsync(applicationId) ?? throw new NotFoundException("درخواست پیدا نشد");
+        var app = await _appRepo.GetByIdAsync(applicationId) ?? throw new NotFoundException("The application was not found");
         if (app.JobSeekerId != jobSeekerId)
-            throw new ForbiddenAccessException("شما به این درخواست دسترسی ندارید");
+            throw new ForbiddenAccessException("You do not have access to this application");
         return app;
     }
 

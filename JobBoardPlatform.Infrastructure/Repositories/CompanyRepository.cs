@@ -22,4 +22,10 @@ public class CompanyRepository : ICompanyRepository
         _context.Companies.Update(company);
         await _context.SaveChangesAsync();
     }
+    
+    public async Task DeleteAsync(Company company)
+    {
+        _context.Companies.Remove(company);
+        await _context.SaveChangesAsync();
+    }
 }

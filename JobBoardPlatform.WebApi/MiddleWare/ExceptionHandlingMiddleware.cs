@@ -30,7 +30,7 @@ public class ExceptionHandlingMiddleware
                 BadRequestException => (StatusCodes.Status400BadRequest, ex.Message),
                 InvalidStatusTransitionException => (StatusCodes.Status400BadRequest, ex.Message),
                 ArgumentException => (StatusCodes.Status400BadRequest, ex.Message),
-                _ => (StatusCodes.Status500InternalServerError, "خطای غیرمنتظره‌ای رخ داد")
+                _ => (StatusCodes.Status500InternalServerError, "An unexpected error occurred")
             };
 
             if (status == StatusCodes.Status500InternalServerError)

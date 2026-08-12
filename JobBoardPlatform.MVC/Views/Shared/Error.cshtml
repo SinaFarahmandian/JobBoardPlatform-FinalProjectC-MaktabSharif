@@ -1,10 +1,23 @@
-﻿@{
-    var message = ViewData["Message"] as string ?? "خطایی رخ داد";
+@{
+    var message = ViewData["Message"] as string ?? "We ran into a problem while processing your request.";
     var statusCode = ViewData["StatusCode"] as int? ?? 500;
-    ViewData["Title"] = "خطا";
+    ViewData["Title"] = "Error";
+    var title = statusCode switch
+    {
+        404 => "The page or information you requested could not be found",
+        403 => "You are not authorized to access this section",
+        400 => "This request cannot be completed",
+        _ => "Something unexpected happened"
+    };
 }
-<div class="container mt-5 text-center">
-    <h1 class="text-danger">خطا @statusCode</h1>
-    <p class="lead">@message</p>
-    <a asp-controller="Public" asp-action="Index" class="btn btn-primary">بازگشت به صفحه‌ی اصلی</a>
-</div>
+<section class="error-page">
+    <div class="error-card">
+        <span class="error-code"><i class="fas fa-exclamation-circle"></i> Error @statusCode</span>
+        <h1>@title</h1>
+        <p>@message</p>
+        <div class="d-flex flex-wrap justify-content-center gap-2">
+            <a asp-controller="Public" asp-action="Index" class="btn btn-primary"><i class="fas fa-home me-1"></i> Back to Home</a>
+            <button type="button" class="btn btn-ghost" onclick="history.back()"><i class="fas fa-arrow-left me-1"></i> Previous Page</button>
+        </div>
+    </div>
+</section>

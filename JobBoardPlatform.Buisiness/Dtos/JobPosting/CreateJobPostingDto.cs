@@ -2,7 +2,7 @@
 
 namespace JobBoardPlatform.Buisiness.Dtos.JobPosting;
 
-public class CreateJobPostingDto
+public class CreateJobPostingDto : IValidatableObject
 {
     [Required, StringLength(150, MinimumLength = 3)]
     public string Title { get; set; } = string.Empty;
@@ -29,6 +29,15 @@ public class CreateJobPostingDto
 
     [StringLength(500)]
     public string? Skills { get; set; }
+
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (SalaryMin.HasValue && SalaryMax.HasValue && SalaryMax < SalaryMin)
+            yield return new ValidationResult("The maximum salary cannot be lower than the minimum salary", new[] { nameof(SalaryMax) });
+
+        if (ExpiresAt.HasValue && ExpiresAt.Value <= DateTime.Now)
+            yield return new ValidationResult("The application deadline must be in the future", new[] { nameof(ExpiresAt) });
+    }
 }
 
 

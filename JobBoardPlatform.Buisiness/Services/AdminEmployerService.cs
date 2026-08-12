@@ -28,7 +28,7 @@ public class AdminEmployerService : IAdminEmployerService
     public async Task<EmployerAdminDetailsDto> GetDetailsAsync(int employerId)
     {
         var employer = await _employerRepo.GetByIdWithCompanyAsync(employerId)
-            ?? throw new NotFoundException("کارفرما پیدا نشد");
+            ?? throw new NotFoundException("The employer was not found");
 
         return new EmployerAdminDetailsDto
         {
@@ -43,12 +43,13 @@ public class AdminEmployerService : IAdminEmployerService
     public async Task ApproveAsync(int employerId)
     {
         var employer = await _employerRepo.GetByIdWithCompanyAsync(employerId)
-                       ?? throw new NotFoundException("کارفرما پیدا نشد");
+                       ?? throw new NotFoundException("The employer was not found");
 
         if (employer.IsApproved)
-            throw new BadRequestException("این کارفرما از قبل تأیید شده است");
+            throw new BadRequestException("This employer has already been approved");
 
         employer.IsApproved = true;
+        employer.IsActive = true;
         employer.UpdatedAt = DateTime.UtcNow;
         await _employerRepo.UpdateAsync(employer);
 
@@ -62,12 +63,13 @@ public class AdminEmployerService : IAdminEmployerService
     public async Task RejectAsync(int employerId)
     {
         var employer = await _employerRepo.GetByIdWithCompanyAsync(employerId)
-                       ?? throw new NotFoundException("کارفرما پیدا نشد");
+                       ?? throw new NotFoundException("The employer was not found");
 
-        if (!employer.IsApproved)
-            throw new BadRequestException("این کارفرما از قبل تأییدنشده/ردشده است");
+        if (!employer.IsApproved && !employer.IsActive)
+            throw new BadRequestException("This employer has already been rejected or deactivated");
 
         employer.IsApproved = false;
+        employer.IsActive = false;
         employer.UpdatedAt = DateTime.UtcNow;
         await _employerRepo.UpdateAsync(employer);
 

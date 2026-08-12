@@ -1,25 +1,48 @@
 @model List<JobBoardPlatform.Buisiness.Dtos.JobPosting.JobPostingDto>
-@{ ViewData["Title"] = "آگهی‌های من"; }
-<h2>آگهی‌های من</h2>
-<a asp-action="Create" class="btn btn-primary mb-3">ساخت آگهی جدید</a>
-<table class="table">
-    <thead><tr><th>عنوان</th><th>وضعیت</th><th></th></tr></thead>
-    <tbody>
-    @foreach (var jp in Model)
-    {
-        <tr>
-            <td>@jp.Title</td>
-            <td>@(jp.IsActive ? "فعال" : "غیرفعال")</td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@jp.Id" class="btn btn-sm btn-outline-secondary">ویرایش</a>
-                <form asp-action="ToggleActive" asp-route-id="@jp.Id" method="post" class="d-inline">
-                    <button class="btn btn-sm btn-outline-warning">فعال/غیرفعال</button>
-                </form>
-                <form asp-action="Delete" asp-route-id="@jp.Id" method="post" class="d-inline" onsubmit="return confirm('مطمئنید؟')">
-                    <button class="btn btn-sm btn-outline-danger">حذف</button>
-                </form>
-            </td>
-        </tr>
-    }
-    </tbody>
-</table>
+@{
+    ViewData["Title"] = "Manage Jobs";
+    var activeCount = Model.Count(x => x.IsActive);
+    string EmploymentLabel(string? value) => value switch { "FullTime" => "Full-time", "PartTime" => "Part-time", "Contract" => "Contract", "Internship" => "Internship", "Remote" => "Remote", _ => value ?? "Not specified" };
+}
+<div class="page-shell">
+    <div class="container">
+        <div class="page-header">
+            <div class="page-header-copy"><span class="eyebrow"><i class="fas fa-briefcase"></i> Hiring workspace</span><h1>My Job Postings</h1><p>@activeCount active out of @Model.Count total jobs</p></div>
+            <div class="page-actions"><a asp-action="Create" class="btn btn-primary"><i class="fas fa-plus me-1"></i> Post a New Job</a></div>
+        </div>
+
+        @if (Model.Any())
+        {
+            <section class="surface-card">
+                <div class="data-table-wrap">
+                    <table class="data-table">
+                        <thead><tr><th>Job</th><th>Employment Type</th><th>Status</th><th>Published</th><th class="text-end">Actions</th></tr></thead>
+                        <tbody>
+                        @foreach (var jp in Model)
+                        {
+                            <tr>
+                                <td><div class="table-primary-cell"><span class="table-icon"><i class="fas fa-briefcase"></i></span><span class="table-primary-copy"><strong>@jp.Title</strong><small>@jp.Location · @(jp.Category ?? "Uncategorized")</small></span></div></td>
+                                <td>@EmploymentLabel(jp.EmploymentType)</td>
+                                <td><span class="badge-soft @(jp.IsActive ? "badge-success" : "badge-neutral")">@(jp.IsActive ? "Active" : "Inactive")</span>@if (jp.IsFeatured) { <span class="badge-soft badge-featured ms-1">Featured</span> }</td>
+                                <td>@jp.CreatedAt.ToString("MMM d, yyyy")</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <a asp-controller="EmployerApplications" asp-action="Index" asp-route-jobPostingId="@jp.Id" class="btn btn-soft-primary"><i class="fas fa-users me-1"></i> Applications</a>
+                                        <a asp-action="Edit" asp-route-id="@jp.Id" class="btn btn-ghost"><i class="fas fa-pen"></i></a>
+                                        <form asp-action="ToggleActive" asp-route-id="@jp.Id" method="post"><button type="submit" class="btn btn-ghost" title="@(jp.IsActive ? "Deactivate" : "Activate")"><i class="fas fa-toggle-@(jp.IsActive ? "on" : "off")"></i></button></form>
+                                        <form asp-action="Delete" asp-route-id="@jp.Id" method="post" data-confirm="Delete the job posting '@jp.Title'?"><button type="submit" class="btn btn-soft-danger" aria-label="Delete"><i class="fas fa-trash"></i></button></form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        }
+        else
+        {
+            <div class="empty-state"><span class="empty-state-icon"><i class="fas fa-bullhorn"></i></span><h3>Publish your first job opportunity</h3><p>A clear, complete description helps you reach relevant candidates faster.</p><a asp-action="Create" class="btn btn-primary">Post Your First Job</a></div>
+        }
+    </div>
+</div>

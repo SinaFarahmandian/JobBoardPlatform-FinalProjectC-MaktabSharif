@@ -29,17 +29,15 @@ public class EmailNotificationService : IEmailNotificationService
         var subject = ReplacePlaceholders(template.Subject, placeholders);
         var body = ReplacePlaceholders(template.Body, placeholders);
 
-        _ = Task.Run(async () =>
+        try
         {
-            try
-            {
-                await _emailService.SendAsync(toEmail, subject, body);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "ارسال ایمیل برای قالب {TemplateKey} به {Email} ناموفق بود", templateKey, toEmail);
-            }
-        });
+            await _emailService.SendAsync(toEmail, subject, body);
+        }
+        catch (Exception ex)
+        {
+            // An email service failure must not fail the primary business operation.
+            _logger.LogError(ex, "Sending the {TemplateKey} email template to {Email} failed", templateKey, toEmail);
+        }
     }
 
     private static string ReplacePlaceholders(string text, Dictionary<string, string> placeholders)

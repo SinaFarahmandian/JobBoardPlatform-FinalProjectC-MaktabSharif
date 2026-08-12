@@ -1,0 +1,63 @@
+@model JobBoardPlatform.Buisiness.Dtos.JobPosting.CreateJobPostingDto
+@{
+    var submitLabel = ViewData["SubmitLabel"] as string ?? "Save Job";
+}
+<div class="row g-3">
+    <div class="col-12">
+        <label asp-for="Title" class="form-label">Job Title</label>
+        <input asp-for="Title" class="form-control" placeholder="For example, Senior Backend Developer" />
+        <span asp-validation-for="Title"></span>
+    </div>
+    <div class="col-12">
+        <label asp-for="Description" class="form-label">Job Description</label>
+        <textarea asp-for="Description" class="form-control" rows="8" placeholder="Describe the responsibilities, working conditions, and expectations for this role..."></textarea>
+        <span asp-validation-for="Description"></span>
+        <div class="form-text">A clear, complete description improves application quality (minimum 20 characters).</div>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Location" class="form-label">Location</label>
+        <input asp-for="Location" class="form-control" placeholder="New York, remote, or hybrid" />
+        <span asp-validation-for="Location"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="EmploymentType" class="form-label">Employment Type</label>
+        <select asp-for="EmploymentType" class="form-select">
+            <option value="FullTime">Full-time</option>
+            <option value="PartTime">Part-time</option>
+            <option value="Contract">Contract</option>
+            <option value="Internship">Internship</option>
+            <option value="Remote">Remote</option>
+        </select>
+        <span asp-validation-for="EmploymentType"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Category" class="form-label">Job Category</label>
+        <input asp-for="Category" class="form-control" placeholder="For example, Software Development" />
+        <span asp-validation-for="Category"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="ExpiresAt" class="form-label">Application Deadline</label>
+        <input asp-for="ExpiresAt" asp-format="{0:yyyy-MM-ddTHH:mm}" type="datetime-local" class="form-control" />
+        <span asp-validation-for="ExpiresAt"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="SalaryMin" class="form-label">Minimum Salary <span class="text-muted fw-normal">(optional)</span></label>
+        <input asp-for="SalaryMin" type="number" min="0" step="1000" class="form-control" placeholder="For example, 60000" />
+        <span asp-validation-for="SalaryMin"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="SalaryMax" class="form-label">Maximum Salary <span class="text-muted fw-normal">(optional)</span></label>
+        <input asp-for="SalaryMax" type="number" min="0" step="1000" class="form-control" placeholder="For example, 90000" />
+        <span asp-validation-for="SalaryMax"></span>
+    </div>
+    <div class="col-12">
+        <label asp-for="Skills" class="form-label">Key Skills</label>
+        <input asp-for="Skills" class="form-control" placeholder="C#, ASP.NET Core, SQL, Docker" />
+        <span asp-validation-for="Skills"></span>
+        <div class="form-text">Separate skills with commas.</div>
+    </div>
+</div>
+<div class="d-flex flex-wrap gap-2 mt-4 pt-3 border-top">
+    <button class="btn btn-primary px-4" type="submit"><i class="fas fa-save me-1"></i> @submitLabel</button>
+    <a asp-action="Index" class="btn btn-ghost">Cancel</a>
+</div>

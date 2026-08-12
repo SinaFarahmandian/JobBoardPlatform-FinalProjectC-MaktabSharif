@@ -12,20 +12,20 @@ public static class EmailTemplateSeeder
 
         var templates = new[]
         {
-            new EmailTemplate("EmployerApproved", "اکانت شما تأیید شد",
-                "سلام {FullName}،\nحساب کارفرمایی شرکت {CompanyName} شما توسط ادمین تأیید شد."),
-            new EmailTemplate("EmployerRejected", "اکانت شما رد شد",
-                "سلام {FullName}،\nمتاسفانه حساب کارفرمایی شرکت {CompanyName} شما تأیید نشد."),
-            new EmailTemplate("ApplicationReviewing", "درخواست شما در حال بررسی است",
-                "سلام {FullName}،\nدرخواست شما برای موقعیت {JobTitle} در حال بررسی است."),
-            new EmailTemplate("ApplicationInterview", "به مصاحبه دعوت شدید",
-                "سلام {FullName}،\nشما برای موقعیت {JobTitle} به مرحله‌ی مصاحبه دعوت شدید."),
-            new EmailTemplate("ApplicationAccepted", "درخواست شما پذیرفته شد",
-                "سلام {FullName}،\nتبریک! درخواست شما برای موقعیت {JobTitle} پذیرفته شد."),
-            new EmailTemplate("ApplicationRejected", "درخواست شما رد شد",
-                "سلام {FullName}،\nمتاسفانه درخواست شما برای موقعیت {JobTitle} رد شد."),
-            new EmailTemplate("NewApplicationReceived", "یک درخواست جدید دریافت کردید",
-                "سلام {EmployerName}،\nیک درخواست جدید برای آگهی {JobTitle} دریافت کردید.")
+            new EmailTemplate("EmployerApproved", "Your account has been approved",
+                "Hello {FullName},\nYour employer account for {CompanyName} has been approved by an administrator."),
+            new EmailTemplate("EmployerRejected", "Your account has been rejected",
+                "Hello {FullName},\nUnfortunately, your employer account for {CompanyName} was not approved."),
+            new EmailTemplate("ApplicationReviewing", "Your application is under review",
+                "Hello {FullName},\nYour application for {JobTitle} is now under review."),
+            new EmailTemplate("ApplicationInterview", "You have been invited to an interview",
+                "Hello {FullName},\nYou have been invited to interview for the {JobTitle} position."),
+            new EmailTemplate("ApplicationAccepted", "Your application has been accepted",
+                "Hello {FullName},\nCongratulations! Your application for {JobTitle} has been accepted."),
+            new EmailTemplate("ApplicationRejected", "Your application has been rejected",
+                "Hello {FullName},\nUnfortunately, your application for {JobTitle} was not successful."),
+            new EmailTemplate("NewApplicationReceived", "You have received a new application",
+                "Hello {EmployerName},\nYou have received a new application for {JobTitle}.")
         };
 
         context.EmailTemplates.AddRange(templates);

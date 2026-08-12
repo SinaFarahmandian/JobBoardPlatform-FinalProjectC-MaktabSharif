@@ -1,40 +1,40 @@
 @model List<EmployerAdminDto>
 @{
-    ViewData["Title"] = "مدیریت کارفرماها";
+    ViewData["Title"] = "Employers";
     Layout = "_AdminLayout";
+    var onlyPending = Context.Request.Query["onlyPending"].ToString().Equals("true", StringComparison.OrdinalIgnoreCase);
+    string StatusLabel(EmployerAdminDto item) => item.IsApproved && item.IsActive ? "Approved" : !item.IsApproved && item.IsActive ? "Pending" : "Rejected or Inactive";
+    string StatusClass(EmployerAdminDto item) => item.IsApproved && item.IsActive ? "badge-success" : !item.IsApproved && item.IsActive ? "badge-warning" : "badge-danger";
 }
-<div class="card">
-    <div class="card-body">
-        <table class="table table-hover align-middle">
-            <thead><tr><th>نام</th><th>شرکت</th><th>وضعیت تأیید</th><th></th></tr></thead>
-            <tbody>
-            @foreach (var e in Model)
-            {
-                <tr>
-                    <td>@e.FullName</td>
-                    <td>@e.CompanyName</td>
-                    <td>
-                        @if (e.IsApproved)
-                        {
-                            <span class="badge bg-success"><i class="bi bi-check-circle"></i> تأییدشده</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split"></i> در انتظار</span>
-                        }
-                    </td>
-                    <td>
-                        <a asp-action="Details" asp-route-id="@e.Id" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a>
-                        <form asp-action="Approve" asp-route-id="@e.Id" method="post" class="d-inline">
-                            <button class="btn btn-sm btn-success"><i class="bi bi-check-lg"></i> تأیید</button>
-                        </form>
-                        <form asp-action="Reject" asp-route-id="@e.Id" method="post" class="d-inline">
-                            <button class="btn btn-sm btn-danger"><i class="bi bi-x-lg"></i> رد</button>
-                        </form>
-                    </td>
-                </tr>
-            }
-            </tbody>
-        </table>
+<div class="admin-page-head"><div><h1>Employer Management</h1><p>Review companies, approve access, and inspect employer information.</p></div></div>
+<section class="admin-card no-padding">
+    <div class="admin-table-toolbar">
+        <span class="admin-table-toolbar-copy">@Model.Count employers in this list</span>
+        <div class="admin-filter"><a asp-action="Index" class="btn @(!onlyPending ? "btn-primary" : "btn-ghost")">All</a><a asp-action="Index" asp-route-onlyPending="true" class="btn @(onlyPending ? "btn-primary" : "btn-ghost")">Pending Approval</a></div>
     </div>
-</div>
+    @if (Model.Any())
+    {
+        <div class="table-responsive">
+            <table class="admin-table">
+                <thead><tr><th>Employer</th><th>Company</th><th>Joined</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
+                <tbody>
+                @foreach (var item in Model)
+                {
+                    var initial = string.IsNullOrWhiteSpace(item.FullName) ? "E" : item.FullName.Trim().Substring(0, 1);
+                    <tr>
+                        <td><div class="admin-person"><span class="admin-person-avatar">@initial</span><span class="admin-person-copy"><strong>@item.FullName</strong><small dir="ltr">@item.Email</small></span></div></td>
+                        <td>@item.CompanyName</td>
+                        <td>@item.CreatedAt.ToString("MMM d, yyyy")</td>
+                        <td><span class="badge-soft @StatusClass(item)">@StatusLabel(item)</span></td>
+                        <td><div class="admin-actions"><a asp-action="Details" asp-route-id="@item.Id" class="btn btn-soft-primary"><i class="fas fa-eye me-1"></i> Details</a>@if (!item.IsApproved) { <form asp-action="Approve" asp-route-id="@item.Id" method="post"><button class="btn btn-success" type="submit"><i class="fas fa-check me-1"></i> Approve</button></form> }@if (item.IsApproved || item.IsActive) { <form asp-action="Reject" asp-route-id="@item.Id" method="post" data-confirm="Reject or deactivate this employer's access?"><button class="btn btn-soft-danger" type="submit"><i class="fas fa-times me-1"></i> Reject</button></form> }</div></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="admin-empty"><i class="fas fa-building"></i><h3>@(onlyPending ? "No approvals are pending" : "No employers registered")</h3><p>@(onlyPending ? "All current requests have been reviewed." : "Employer accounts will appear here after registration.")</p></div>
+    }
+</section>

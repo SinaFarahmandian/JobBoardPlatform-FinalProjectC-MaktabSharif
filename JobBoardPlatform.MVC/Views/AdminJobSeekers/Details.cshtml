@@ -1,18 +1,24 @@
 @model JobSeekerAdminDetailsDto
 @{
-    ViewData["Title"] = "جزئیات کارجو";
+    ViewData["Title"] = "Job Seeker Details";
     Layout = "_AdminLayout";
+    var initial = string.IsNullOrWhiteSpace(Model.FullName) ? "J" : Model.FullName.Trim().Substring(0, 1);
 }
-<div class="card">
-    <div class="card-body">
-        <h4><i class="bi bi-person-badge"></i> @Model.FullName</h4>
-        <hr />
-        <p><strong>ایمیل:</strong> @Model.Email</p>
-        <p><strong>مهارت‌ها:</strong> @Model.Skills</p>
-        <p><strong>سابقه:</strong> @Model.YearsOfExperience سال</p>
-        <p><strong>عنوان شغلی مورد نظر:</strong> @Model.DesiredJobTitle</p>
-        <p><strong>تعداد درخواست‌ها:</strong> @Model.ApplicationsCount</p>
-        <p><strong>رزومه:</strong> @(Model.HasResume ? "دارد" : "ندارد")</p>
-        <a asp-action="Index" class="btn btn-secondary"><i class="bi bi-arrow-right"></i> بازگشت</a>
+<div class="admin-page-head"><div><h1>Job Seeker Details</h1><p>Career information, resume status, and account activity.</p></div><a asp-action="Index" class="btn btn-ghost"><i class="fas fa-arrow-left me-1"></i> Back</a></div>
+<div class="admin-detail-grid">
+    <div>
+        <section class="admin-profile-card mb-3"><div class="admin-profile-head"><span class="admin-profile-avatar">@initial</span><div><h2>@Model.FullName</h2><p>@(Model.DesiredJobTitle ?? "Job title not provided") · @(Model.IsActive ? "Active account" : "Inactive account")</p></div></div></section>
+        <section class="admin-card"><div class="admin-card-head"><div><h2>Career Information</h2><p>Information in the job seeker's profile</p></div></div><div class="admin-card-body">
+            <div class="admin-detail-list">
+                <div class="admin-detail-item"><small>Email</small><strong>@Model.Email</strong></div>
+                <div class="admin-detail-item"><small>Experience</small><strong>@Model.YearsOfExperience years</strong></div>
+                <div class="admin-detail-item"><small>Desired Role</small><strong>@(Model.DesiredJobTitle ?? "Not provided")</strong></div>
+                <div class="admin-detail-item"><small>Resume</small><strong>@(Model.HasResume ? "Uploaded" : "Not provided")</strong></div>
+                <div class="admin-detail-item"><small>Applications</small><strong>@Model.ApplicationsCount</strong></div>
+                <div class="admin-detail-item"><small>Joined</small><strong>@Model.CreatedAt.ToString("MMM d, yyyy")</strong></div>
+            </div>
+            <h3 class="h6 fw-bold mt-4 mb-2">Skills</h3><div class="admin-long-copy">@(Model.Skills ?? "No skills have been provided.")</div>
+        </div></section>
     </div>
+    <aside class="admin-card"><div class="admin-card-head"><div><h2>Account Management</h2><p>Current status: @(Model.IsActive ? "Active" : "Inactive")</p></div></div><div class="admin-card-body"><form asp-action="@(Model.IsActive ? "Deactivate" : "Activate")" asp-route-id="@Model.Id" method="post" data-confirm="@(Model.IsActive ? "Deactivate this job seeker account?" : "Activate this job seeker account?")"><button class="btn @(Model.IsActive ? "btn-soft-danger" : "btn-success") w-100" type="submit"><i class="fas fa-toggle-@(Model.IsActive ? "off" : "on") me-1"></i> @(Model.IsActive ? "Deactivate Account" : "Activate Account")</button></form></div></aside>
 </div>

@@ -35,26 +35,31 @@ public class JobSeekerProfileService : IJobSeekerProfileService
         return MapToDto(seeker);
     }
 
-    public async Task<JobSeekerProfileDto> UploadResumeAsync(int jobSeekerId, IFormFile file)
+    public async Task<JobSeekerProfileDto> UploadResumeAsync(int jobSeekerId, IFormFile? file)
     {
         if (file == null || file.Length == 0)
-            throw new BadRequestException("فایلی ارسال نشده است");
+            throw new BadRequestException("No file was uploaded");
 
         if (file.Length > MaxFileSizeBytes)
-            throw new BadRequestException("حجم فایل نباید بیشتر از ۵ مگابایت باشد");
+            throw new BadRequestException("The file size must not exceed 5 MB");
 
         var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
         if (!AllowedExtensions.Contains(extension))
-            throw new BadRequestException("فقط فایل PDF مجاز است");
+            throw new BadRequestException("Only PDF files are allowed");
 
         var seeker = await GetOwnedAsync(jobSeekerId);
 
         using var memoryStream = new MemoryStream();
         await file.CopyToAsync(memoryStream);
 
-        seeker.ResumeData = memoryStream.ToArray();
-        seeker.ResumeFileName = file.FileName;
-        seeker.ResumeContentType = file.ContentType;
+        var resumeData = memoryStream.ToArray();
+        if (resumeData.Length < 5 || resumeData[0] != (byte)'%' || resumeData[1] != (byte)'P'
+            || resumeData[2] != (byte)'D' || resumeData[3] != (byte)'F' || resumeData[4] != (byte)'-')
+            throw new BadRequestException("The uploaded file is not a valid PDF");
+
+        seeker.ResumeData = resumeData;
+        seeker.ResumeFileName = Path.GetFileName(file.FileName);
+        seeker.ResumeContentType = "application/pdf";
         seeker.UpdatedAt = DateTime.UtcNow;
 
         await _repo.UpdateAsync(seeker);
@@ -80,13 +85,13 @@ public class JobSeekerProfileService : IJobSeekerProfileService
         var seeker = await GetOwnedAsync(jobSeekerId);
 
         if (seeker.ResumeData == null)
-            throw new NotFoundException("رزومه‌ای برای این کارجو ثبت نشده است");
+            throw new NotFoundException("No resume has been uploaded for this job seeker");
 
         return (seeker.ResumeData, seeker.ResumeContentType!, seeker.ResumeFileName!);
     }
 
     private async Task<Domain.Entities.JobSeekers.JobSeeker> GetOwnedAsync(int jobSeekerId)
-        => await _repo.GetByIdAsync(jobSeekerId) ?? throw new NotFoundException("پروفایل کارجو پیدا نشد");
+        => await _repo.GetByIdAsync(jobSeekerId) ?? throw new NotFoundException("The job seeker profile was not found");
 
     private static JobSeekerProfileDto MapToDto(Domain.Entities.JobSeekers.JobSeeker s) => new()
     {

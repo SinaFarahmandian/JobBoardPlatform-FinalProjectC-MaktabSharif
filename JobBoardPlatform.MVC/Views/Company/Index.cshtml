@@ -1,6 +1,40 @@
 @model JobBoardPlatform.Buisiness.Dtos.Company.CompanyDto
-@{ ViewData["Title"] = "شرکت من"; }
-<h2>@Model.Name</h2>
-<p>@Model.Description</p>
-<p><strong>وب‌سایت:</strong> @Model.Website</p>
-<a asp-action="Edit" class="btn btn-outline-primary">ویرایش</a>
+@{
+    ViewData["Title"] = "Company Profile";
+    var initial = string.IsNullOrWhiteSpace(Model.Name) ? "C" : Model.Name.Trim().Substring(0, 1);
+}
+<div class="page-shell">
+    <div class="container">
+        <div class="page-header">
+            <div class="page-header-copy"><span class="eyebrow"><i class="fas fa-building"></i> Your employer identity</span><h1>Company Profile</h1><p>Help candidates understand your organization before they apply.</p></div>
+            <div class="page-actions"><a asp-action="Edit" class="btn btn-primary"><i class="fas fa-pen me-1"></i> Edit Profile</a><a asp-controller="EmployerJobPostings" asp-action="Index" class="btn btn-ghost">Manage Jobs</a></div>
+        </div>
+        <div class="dashboard-grid">
+            <section class="surface-card span-8">
+                <div class="profile-hero">
+                    <span class="profile-avatar">@initial</span>
+                    <div class="profile-copy"><h2>@Model.Name</h2><p>@(Model.Industry ?? "Industry not specified")</p></div>
+                </div>
+                <div class="surface-card-body pt-0 prose">
+                    <h2>About the Company</h2>
+                    <p>@(string.IsNullOrWhiteSpace(Model.Description) ? "No company description has been added yet. A concise introduction can give candidates a clearer view of your work and culture." : Model.Description)</p>
+                </div>
+            </section>
+            <aside class="surface-card span-4">
+                <div class="surface-card-header"><h2>Company Information</h2></div>
+                <div class="surface-card-body">
+                    <div class="info-list">
+                        <div class="info-row"><span class="info-row-label"><i class="fas fa-industry"></i> Industry</span><strong>@(Model.Industry ?? "Not provided")</strong></div>
+                        <div class="info-row"><span class="info-row-label"><i class="fas fa-globe"></i> Website</span>@if (!string.IsNullOrWhiteSpace(Model.Website)) { <a href="@Model.Website" target="_blank" rel="noopener noreferrer">Visit website <i class="fas fa-external-link-alt ms-1"></i></a> } else { <strong>Not provided</strong> }</div>
+                    </div>
+                </div>
+            </aside>
+            <section class="surface-card span-12">
+                <div class="surface-card-body d-flex flex-wrap align-items-center justify-content-between gap-3">
+                    <div><h3 class="h6 fw-bold mb-1">Ready to find your next great hire?</h3><p class="text-muted small mb-0">Create a complete, transparent posting to attract more relevant candidates.</p></div>
+                    <a asp-controller="EmployerJobPostings" asp-action="Create" class="btn btn-primary">Post a New Job <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>

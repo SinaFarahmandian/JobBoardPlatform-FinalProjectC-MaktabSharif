@@ -22,13 +22,13 @@ public class AdminEmployersController : AdminControllerBase
     public async Task<IActionResult> Approve(int id)
     {
         await _service.ApproveAsync(id);
-        return Ok(new { message = "کارفرما تأیید شد" });
+        return Ok(new { message = "The employer has been approved" });
     }
 
     [HttpPost("{id}/reject")]
     public async Task<IActionResult> Reject(int id)
     {
         await _service.RejectAsync(id);
-        return Ok(new { message = "کارفرما رد شد" });
+        return Ok(new { message = "The employer has been rejected" });
     }
 }

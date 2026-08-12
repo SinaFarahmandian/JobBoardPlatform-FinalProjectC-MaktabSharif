@@ -40,7 +40,7 @@ public class AccountController : Controller
             return View(model);
         }
 
-        TempData["Success"] = "ثبت‌نام با موفقیت انجام شد. اکنون وارد شوید.";
+        TempData["Success"] = "Registration completed successfully. You can now sign in.";
         return RedirectToAction(nameof(Login));
     }
 
@@ -64,7 +64,7 @@ public class AccountController : Controller
             return View(model);
         }
 
-        TempData["Success"] = "ثبت‌نام با موفقیت انجام شد. حساب شما تا تأیید ادمین غیرفعال است.";
+        TempData["Success"] = "Registration completed successfully. Your account will remain inactive until an administrator approves it.";
         return RedirectToAction(nameof(Login));
     }
 
@@ -78,28 +78,29 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null)
     {
+        ViewData["ReturnUrl"] = returnUrl;
         if (!ModelState.IsValid) return View(model);
 
         var user = await _userManager.FindByEmailAsync(model.Email);
         if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
         {
-            ModelState.AddModelError(string.Empty, "ایمیل یا رمز عبور اشتباه است");
+            ModelState.AddModelError(string.Empty, "The email address or password is incorrect");
             return View(model);
         }
 
         if (!user.IsActive)
         {
-            ModelState.AddModelError(string.Empty, "حساب شما غیرفعال شده است");
+            ModelState.AddModelError(string.Empty, "Your account has been deactivated");
             return View(model);
         }
 
         if (user is Employer && !user.IsApproved)
         {
-            ModelState.AddModelError(string.Empty, "حساب کارفرمایی شما هنوز توسط ادمین تأیید نشده است");
+            ModelState.AddModelError(string.Empty, "Your employer account has not yet been approved by an administrator");
             return View(model);
         }
 
-        await _signInManager.SignInAsync(user, isPersistent: true);
+        await _signInManager.SignInAsync(user, isPersistent: model.RememberMe);
 
         if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             return Redirect(returnUrl);

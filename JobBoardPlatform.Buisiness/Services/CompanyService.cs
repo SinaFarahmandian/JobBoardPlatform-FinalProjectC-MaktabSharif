@@ -19,14 +19,14 @@ public class CompanyService : ICompanyService
     public async Task<CompanyDto> GetMyCompanyAsync(int employerId)
     {
         var employer = await _employerRepository.GetByIdWithCompanyAsync(employerId)
-                       ?? throw new NotFoundException("کارفرما پیدا نشد");
+                       ?? throw new NotFoundException("The employer was not found");
         return MapToDto(employer.Company);
     }
 
     public async Task<CompanyDto> UpdateMyCompanyAsync(int employerId, UpdateCompanyDto dto)
     {
         var employer = await _employerRepository.GetByIdWithCompanyAsync(employerId)
-                       ?? throw new NotFoundException("کارفرما پیدا نشد");
+                       ?? throw new NotFoundException("The employer was not found");
 
         employer.Company.Name = dto.Name;
         employer.Company.Website = dto.Website;

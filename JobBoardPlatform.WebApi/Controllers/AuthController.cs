@@ -45,6 +45,6 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Logout(RefreshTokenRequestDto dto)
     {
         await _authService.LogoutAsync(dto.RefreshToken);
-        return Ok(new { message = "خروج با موفقیت انجام شد" });
+        return Ok(new { message = "You have signed out successfully" });
     }
 }

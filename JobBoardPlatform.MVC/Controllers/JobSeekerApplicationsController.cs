@@ -22,7 +22,7 @@ public class JobSeekerApplicationsController : Controller
     public async Task<IActionResult> Apply(CreateJobApplicationDto dto)
     {
         await _service.ApplyAsync(UserId, dto);
-        TempData["Success"] = "درخواست شما ارسال شد";
+        TempData["Success"] = "Your application has been submitted";
         return RedirectToAction("Details", "Public", new { id = dto.JobPostingId });
     }
 
@@ -30,7 +30,7 @@ public class JobSeekerApplicationsController : Controller
     public async Task<IActionResult> Cancel(int id)
     {
         await _service.CancelAsync(UserId, id);
-        TempData["Success"] = "درخواست لغو شد";
+        TempData["Success"] = "Your application has been withdrawn";
         return RedirectToAction(nameof(Index));
     }
 }

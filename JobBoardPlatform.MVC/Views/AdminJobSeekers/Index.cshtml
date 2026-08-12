@@ -1,38 +1,28 @@
 @model List<JobSeekerAdminDto>
-@{
-    ViewData["Title"] = "مدیریت کارجوها";
-    Layout = "_AdminLayout";
-}
-<div class="card">
-    <div class="card-body">
-        <table class="table table-hover align-middle">
-            <thead><tr><th>نام</th><th>ایمیل</th><th>وضعیت</th><th></th></tr></thead>
+@{ ViewData["Title"] = "Job Seekers"; Layout = "_AdminLayout"; }
+<div class="admin-page-head"><div><h1>Job Seeker Management</h1><p>View accounts, activity status, and candidate career details.</p></div></div>
+<section class="admin-card no-padding">
+    <div class="admin-table-toolbar"><span class="admin-table-toolbar-copy">@Model.Count job seeker accounts registered.</span></div>
+    @if (Model.Any())
+    {
+        <div class="table-responsive"><table class="admin-table">
+            <thead><tr><th>Job Seeker</th><th>Joined</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
             <tbody>
-            @foreach (var s in Model)
+            @foreach (var item in Model)
             {
+                var initial = string.IsNullOrWhiteSpace(item.FullName) ? "J" : item.FullName.Trim().Substring(0, 1);
                 <tr>
-                    <td>@s.FullName</td>
-                    <td>@s.Email</td>
-                    <td>
-                        @if (s.IsActive)
-                        {
-                            <span class="badge bg-success">فعال</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-secondary">غیرفعال</span>
-                        }
-                    </td>
-                    <td>
-                        <a asp-action="Details" asp-route-id="@s.Id" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a>
-                        <form asp-action="ToggleStatus" asp-route-id="@s.Id" method="post" class="d-inline">
-                            <input type="hidden" name="isActive" value="@(!s.IsActive)" />
-                            <button class="btn btn-sm btn-outline-warning"><i class="bi bi-toggle2-on"></i> فعال/غیرفعال</button>
-                        </form>
-                    </td>
+                    <td><div class="admin-person"><span class="admin-person-avatar">@initial</span><span class="admin-person-copy"><strong>@item.FullName</strong><small dir="ltr">@item.Email</small></span></div></td>
+                    <td>@item.CreatedAt.ToString("MMM d, yyyy")</td>
+                    <td><span class="badge-soft @(item.IsActive ? "badge-success" : "badge-danger")">@(item.IsActive ? "Active" : "Inactive")</span></td>
+                    <td><div class="admin-actions"><a asp-action="Details" asp-route-id="@item.Id" class="btn btn-soft-primary"><i class="fas fa-eye me-1"></i> Details</a><form asp-action="@(item.IsActive ? "Deactivate" : "Activate")" asp-route-id="@item.Id" method="post" data-confirm="@(item.IsActive ? "Deactivate this job seeker account?" : "Activate this job seeker account?")"><button class="btn @(item.IsActive ? "btn-soft-danger" : "btn-success")" type="submit"><i class="fas fa-toggle-@(item.IsActive ? "off" : "on") me-1"></i> @(item.IsActive ? "Deactivate" : "Activate")</button></form></div></td>
                 </tr>
             }
             </tbody>
-        </table>
-    </div>
-</div>
+        </table></div>
+    }
+    else
+    {
+        <div class="admin-empty"><i class="fas fa-users"></i><h3>No job seekers registered</h3><p>Job seeker accounts will appear here after registration.</p></div>
+    }
+</section>

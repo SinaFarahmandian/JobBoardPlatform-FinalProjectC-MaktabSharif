@@ -1,42 +1,42 @@
 @model List<JobSeekerApplicationDto>
 @{
-    ViewData["Title"] = "درخواست‌های من";
-    string BadgeClass(string status) => status switch
-    {
-        "Pending" => "bg-secondary",
-        "Reviewing" => "bg-info",
-        "Interview" => "bg-primary",
-        "Accepted" => "bg-success",
-        "Rejected" => "bg-danger",
-        "Cancelled" => "bg-dark",
-        _ => "bg-secondary"
-    };
+    ViewData["Title"] = "My Applications";
+    string BadgeClass(string status) => status switch { "Pending" => "badge-warning", "Reviewing" => "badge-info", "Interview" => "badge-primary", "Accepted" => "badge-success", "Rejected" => "badge-danger", "Cancelled" => "badge-neutral", _ => "badge-neutral" };
+    string StatusLabel(string status) => status switch { "Pending" => "Submitted", "Reviewing" => "Under Review", "Interview" => "Interview", "Accepted" => "Accepted", "Rejected" => "Rejected", "Cancelled" => "Withdrawn", _ => status };
 }
-<h2><i class="bi bi-send"></i> درخواست‌های من</h2>
-<div class="card">
-    <div class="card-body">
-        <table class="table table-hover align-middle">
-            <thead><tr><th>آگهی</th><th>شرکت</th><th>وضعیت</th><th>تاریخ</th><th></th></tr></thead>
-            <tbody>
-            @foreach (var app in Model)
-            {
-                <tr>
-                    <td>@app.JobPostingTitle</td>
-                    <td>@app.CompanyName</td>
-                    <td><span class="badge @BadgeClass(app.Status)">@app.Status</span></td>
-                    <td>@app.AppliedAt.ToString("yyyy/MM/dd")</td>
-                    <td>
-                        <a asp-action="Details" asp-route-id="@app.Id" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a>
-                        @if (app.Status == "Pending")
+<div class="page-shell">
+    <div class="container">
+        <div class="page-header">
+            <div class="page-header-copy"><span class="eyebrow"><i class="fas fa-paper-plane"></i> Track your hiring journey</span><h1>My Applications</h1><p>The latest status of every opportunity you have applied for.</p></div>
+            <div class="page-actions"><a asp-controller="Public" asp-action="Index" class="btn btn-primary"><i class="fas fa-search me-1"></i> Find Another Job</a></div>
+        </div>
+
+        @if (Model.Any())
+        {
+            <section class="surface-card">
+                <div class="surface-card-header"><h2>@Model.Count submitted applications</h2></div>
+                <div class="data-table-wrap">
+                    <table class="data-table">
+                        <thead><tr><th>Job</th><th>Status</th><th>Submitted</th><th class="text-end">Actions</th></tr></thead>
+                        <tbody>
+                        @foreach (var app in Model)
                         {
-                            <form asp-action="Cancel" asp-route-id="@app.Id" method="post" class="d-inline">
-                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-x-circle"></i> لغو</button>
-                            </form>
+                            var initial = string.IsNullOrWhiteSpace(app.CompanyName) ? "C" : app.CompanyName.Trim().Substring(0, 1);
+                            <tr>
+                                <td><div class="table-primary-cell"><span class="table-icon">@initial</span><span class="table-primary-copy"><strong>@app.JobPostingTitle</strong><small>@app.CompanyName</small></span></div></td>
+                                <td><span class="badge-soft @BadgeClass(app.Status)">@StatusLabel(app.Status)</span></td>
+                                <td>@app.AppliedAt.ToString("MMM d, yyyy")</td>
+                                <td><div class="table-actions"><a asp-action="Details" asp-route-id="@app.Id" class="btn btn-soft-primary"><i class="fas fa-eye me-1"></i> Details</a>@if (app.Status == "Pending") { <form asp-action="Cancel" asp-route-id="@app.Id" method="post" data-confirm="Withdraw this application?"><button type="submit" class="btn btn-soft-danger"><i class="fas fa-times me-1"></i> Withdraw</button></form> }</div></td>
+                            </tr>
                         }
-                    </td>
-                </tr>
-            }
-            </tbody>
-        </table>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        }
+        else
+        {
+            <div class="empty-state"><span class="empty-state-icon"><i class="fas fa-paper-plane"></i></span><h3>You have not submitted any applications yet</h3><p>Explore relevant opportunities and apply for a role that fits your career direction.</p><a asp-controller="Public" asp-action="Index" class="btn btn-primary">Explore Jobs</a></div>
+        }
     </div>
 </div>

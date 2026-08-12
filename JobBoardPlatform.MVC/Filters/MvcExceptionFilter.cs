@@ -14,7 +14,7 @@ public class MvcExceptionFilter : IExceptionFilter
             ForbiddenAccessException => (403, context.Exception.Message),
             BadRequestException => (400, context.Exception.Message),
             InvalidStatusTransitionException => (400, context.Exception.Message),
-            _ => (500, "خطای غیرمنتظره‌ای رخ داد")
+            _ => (500, "An unexpected error occurred")
         };
 
         context.Result = new ViewResult

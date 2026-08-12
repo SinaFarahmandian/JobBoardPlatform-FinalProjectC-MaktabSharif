@@ -32,15 +32,15 @@ public class JobSeekerProfileController : Controller
     {
         if (!ModelState.IsValid) return View(dto);
         await _service.UpdateMyProfileAsync(UserId, dto);
-        TempData["Success"] = "پروفایل به‌روزرسانی شد";
+        TempData["Success"] = "Your profile has been updated";
         return RedirectToAction(nameof(Index));
     }
 
     [HttpPost]
-    public async Task<IActionResult> UploadResume(IFormFile file)
+    public async Task<IActionResult> UploadResume(IFormFile? file)
     {
         await _service.UploadResumeAsync(UserId, file);
-        TempData["Success"] = "رزومه آپلود شد";
+        TempData["Success"] = "Your resume has been uploaded";
         return RedirectToAction(nameof(Index));
     }
 
@@ -54,7 +54,7 @@ public class JobSeekerProfileController : Controller
     public async Task<IActionResult> DeleteResume()
     {
         await _service.DeleteResumeAsync(UserId);
-        TempData["Success"] = "رزومه حذف شد";
+        TempData["Success"] = "Your resume has been deleted";
         return RedirectToAction(nameof(Index));
     }
 }

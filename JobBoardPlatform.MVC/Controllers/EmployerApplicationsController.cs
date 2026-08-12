@@ -28,8 +28,14 @@ public class EmployerApplicationsController : Controller
     [HttpPost("{id}/status")]
     public async Task<IActionResult> ChangeStatus(int id, ApplicationStatus newStatus, int jobPostingId)
     {
+        if (!ModelState.IsValid)
+        {
+            TempData["Error"] = "The selected status is not valid";
+            return RedirectToAction(nameof(Index), new { jobPostingId });
+        }
+
         await _service.ChangeStatusAsync(EmployerId, id, newStatus);
-        TempData["Success"] = "وضعیت درخواست به‌روزرسانی شد";
+        TempData["Success"] = "The application status has been updated";
         return RedirectToAction(nameof(Index), new { jobPostingId });
     }
 }

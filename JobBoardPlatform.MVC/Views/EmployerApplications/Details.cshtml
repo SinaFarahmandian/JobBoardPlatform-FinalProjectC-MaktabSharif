@@ -1,16 +1,53 @@
-@model JobBoardPlatform.Buisiness.Dtos.JobApplication.JobApplicationDto
-@{ ViewData["Title"] = "جزئیات درخواست"; }
-<h2>درخواست از @Model.JobSeekerName</h2>
-<p><strong>وضعیت فعلی:</strong> @Model.Status</p>
-<p><strong>متن معرفی:</strong> @Model.CoverLetter</p>
+@model JobApplicationDto
+@{
+    ViewData["Title"] = "Review Application";
+    string BadgeClass(string status) => status switch { "Pending" => "badge-warning", "Reviewing" => "badge-info", "Interview" => "badge-primary", "Accepted" => "badge-success", "Rejected" => "badge-danger", "Cancelled" => "badge-neutral", _ => "badge-neutral" };
+    string StatusLabel(string status) => status switch { "Pending" => "New Application", "Reviewing" => "Under Review", "Interview" => "Interview", "Accepted" => "Accepted", "Rejected" => "Rejected", "Cancelled" => "Withdrawn", _ => status };
+    var initial = string.IsNullOrWhiteSpace(Model.JobSeekerName) ? "C" : Model.JobSeekerName.Trim().Substring(0, 1);
+}
+<div class="page-shell">
+    <div class="container" style="max-width:980px">
+        <div class="page-header"><div class="page-header-copy"><h1>Review Candidate Application</h1><p>Keep the status aligned with the candidate's actual stage in your hiring process.</p></div><a asp-action="Index" asp-route-jobPostingId="@Model.JobPostingId" class="btn btn-ghost"><i class="fas fa-arrow-left me-1"></i> Back</a></div>
+        <div class="dashboard-grid">
+            <section class="surface-card span-8 application-detail">
+                <div class="application-head">
+                    <span class="profile-avatar" style="width:58px;height:58px;flex-basis:58px">@initial</span>
+                    <div class="flex-grow-1"><h2>@Model.JobSeekerName</h2><p>Applied for @Model.JobPostingTitle · @Model.AppliedAt.ToString("MMM d, yyyy")</p></div>
+                    <span class="badge-soft @BadgeClass(Model.Status)">@StatusLabel(Model.Status)</span>
+                </div>
+                <div class="prose">
+                    <h2>Candidate Cover Letter</h2>
+                    <p>@(string.IsNullOrWhiteSpace(Model.CoverLetter) ? "The candidate did not include a cover letter with this application." : Model.CoverLetter)</p>
+                </div>
+            </section>
 
-<form asp-action="ChangeStatus" asp-route-id="@Model.Id" method="post" class="d-flex gap-2">
-    <input type="hidden" name="jobPostingId" value="@Model.JobPostingId" />
-    <select name="newStatus" class="form-select w-auto">
-        <option value="Reviewing">در حال بررسی</option>
-        <option value="Interview">دعوت به مصاحبه</option>
-        <option value="Accepted">پذیرش</option>
-        <option value="Rejected">رد</option>
-    </select>
-    <button class="btn btn-primary">تغییر وضعیت</button>
-</form>
+            <aside class="surface-card span-4">
+                <div class="surface-card-header"><h2>Next Step</h2></div>
+                <div class="surface-card-body">
+                    @if (Model.Status == "Pending")
+                    {
+                        <p class="text-muted small">The candidate will be notified when you begin the review.</p>
+                        <form asp-action="ChangeStatus" asp-route-id="@Model.Id" method="post"><input type="hidden" name="jobPostingId" value="@Model.JobPostingId" /><input type="hidden" name="newStatus" value="Reviewing" /><button class="btn btn-primary w-100" type="submit"><i class="fas fa-search me-1"></i> Start Review</button></form>
+                    }
+                    else if (Model.Status == "Reviewing")
+                    {
+                        <p class="text-muted small">After the initial review, invite the candidate to an interview or reject the application.</p>
+                        <form asp-action="ChangeStatus" asp-route-id="@Model.Id" method="post" class="mb-2"><input type="hidden" name="jobPostingId" value="@Model.JobPostingId" /><input type="hidden" name="newStatus" value="Interview" /><button class="btn btn-primary w-100" type="submit"><i class="fas fa-comments me-1"></i> Invite to Interview</button></form>
+                        <form asp-action="ChangeStatus" asp-route-id="@Model.Id" method="post" data-confirm="Reject this application?"><input type="hidden" name="jobPostingId" value="@Model.JobPostingId" /><input type="hidden" name="newStatus" value="Rejected" /><button class="btn btn-soft-danger w-100" type="submit">Reject Application</button></form>
+                    }
+                    else if (Model.Status == "Interview")
+                    {
+                        <p class="text-muted small">Record the final interview outcome.</p>
+                        <form asp-action="ChangeStatus" asp-route-id="@Model.Id" method="post" class="mb-2" data-confirm="Confirm this candidate's acceptance?"><input type="hidden" name="jobPostingId" value="@Model.JobPostingId" /><input type="hidden" name="newStatus" value="Accepted" /><button class="btn btn-success w-100" type="submit"><i class="fas fa-check me-1"></i> Accept Candidate</button></form>
+                        <form asp-action="ChangeStatus" asp-route-id="@Model.Id" method="post" data-confirm="Reject this application?"><input type="hidden" name="jobPostingId" value="@Model.JobPostingId" /><input type="hidden" name="newStatus" value="Rejected" /><button class="btn btn-soft-danger w-100" type="submit">Reject Application</button></form>
+                    }
+                    else
+                    {
+                        <div class="text-center py-3"><span class="empty-state-icon"><i class="fas fa-flag-checkered"></i></span><h3 class="h6 fw-bold">This application process is complete</h3><p class="text-muted small mb-0">Final status: @StatusLabel(Model.Status)</p></div>
+                    }
+                    <div class="apply-note mt-3"><i class="fas fa-envelope"></i> The candidate will be notified of status changes by email.</div>
+                </div>
+            </aside>
+        </div>
+    </div>
+</div>

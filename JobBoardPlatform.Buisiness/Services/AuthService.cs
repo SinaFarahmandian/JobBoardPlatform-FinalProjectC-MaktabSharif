@@ -37,12 +37,21 @@ public class AuthService : IAuthService
         if (!result.Succeeded)
             return AuthResultDto.Failure(result.Errors.Select(e => e.Description));
 
-        await _userManager.AddToRoleAsync(jobSeeker, "JobSeeker");
-        return AuthResultDto.Success("ثبت‌نام با موفقیت انجام شد. اکنون می‌توانید وارد شوید.");
+        var roleResult = await _userManager.AddToRoleAsync(jobSeeker, "JobSeeker");
+        if (!roleResult.Succeeded)
+        {
+            await _userManager.DeleteAsync(jobSeeker);
+            return AuthResultDto.Failure(roleResult.Errors.Select(e => e.Description));
+        }
+
+        return AuthResultDto.Success("Registration completed successfully. You can now sign in.");
     }
 
     public async Task<AuthResultDto> RegisterEmployerAsync(RegisterEmployerDto dto)
     {
+        if (await _userManager.FindByEmailAsync(dto.Email) != null)
+            return AuthResultDto.Failure(new[] { "This email address is already registered" });
+
         var company = new Company(dto.CompanyName, dto.CompanyWebsite, dto.CompanyDescription, dto.Industry);
         await _companyRepository.AddAsync(company);
 
@@ -50,23 +59,33 @@ public class AuthService : IAuthService
         var result = await _userManager.CreateAsync(employer, dto.Password);
 
         if (!result.Succeeded)
+        {
+            await _companyRepository.DeleteAsync(company);
             return AuthResultDto.Failure(result.Errors.Select(e => e.Description));
+        }
 
-        await _userManager.AddToRoleAsync(employer, "Employer");
-        return AuthResultDto.Success("ثبت‌نام با موفقیت انجام شد. حساب شما تا تأیید ادمین غیرفعال است.");
+        var roleResult = await _userManager.AddToRoleAsync(employer, "Employer");
+        if (!roleResult.Succeeded)
+        {
+            await _userManager.DeleteAsync(employer);
+            await _companyRepository.DeleteAsync(company);
+            return AuthResultDto.Failure(roleResult.Errors.Select(e => e.Description));
+        }
+
+        return AuthResultDto.Success("Registration completed successfully. Your account will remain inactive until an administrator approves it.");
     }
 
     public async Task<AuthResultDto> LoginAsync(LoginDto dto)
     {
         var user = await _userManager.FindByEmailAsync(dto.Email);
         if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
-            return AuthResultDto.Failure(new[] { "ایمیل یا رمز عبور اشتباه است" });
+            return AuthResultDto.Failure(new[] { "The email address or password is incorrect" });
 
         if (!user.IsActive)
-            return AuthResultDto.Failure(new[] { "حساب شما غیرفعال شده است" });
+            return AuthResultDto.Failure(new[] { "Your account has been deactivated" });
 
         if (user is Employer && !user.IsApproved)
-            return AuthResultDto.Failure(new[] { "حساب کارفرمایی شما هنوز توسط ادمین تأیید نشده است" });
+            return AuthResultDto.Failure(new[] { "Your employer account has not yet been approved by an administrator" });
 
         var roles = await _userManager.GetRolesAsync(user);
         var accessToken = _jwtTokenService.GenerateToken(user, roles);
@@ -80,12 +99,12 @@ public class AuthService : IAuthService
         var storedToken = await _refreshTokenRepository.GetByTokenAsync(refreshToken);
 
         if (storedToken == null || !storedToken.IsActive)
-            return AuthResultDto.Failure(new[] { "Refresh Token نامعتبر یا منقضی‌شده است" });
+            return AuthResultDto.Failure(new[] { "The refresh token is invalid or has expired" });
 
         var user = await _userManager.FindByIdAsync(storedToken.UserId.ToString())
-            ?? throw new NotFoundException("کاربر پیدا نشد");
+            ?? throw new NotFoundException("The user was not found");
 
-        // توکن قدیمی باطل می‌شه (Rotation) و یکی جدید صادر می‌شه
+        // Revoke the old token (rotation) and issue a new one.
         storedToken.Revoke();
         await _refreshTokenRepository.UpdateAsync(storedToken);
 

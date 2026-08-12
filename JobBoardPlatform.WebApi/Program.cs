@@ -111,16 +111,19 @@ using (var scope = app.Services.CreateScope())
     }
 
     var adminEmail = config["AdminSeed:Email"]!;
-    if (await userManager.FindByEmailAsync(adminEmail) == null)
+    var adminPassword = config["AdminSeed:Password"];
+    if (!string.IsNullOrWhiteSpace(adminEmail) 
+        && !string.IsNullOrWhiteSpace(adminPassword) 
+        && await userManager.FindByEmailAsync(adminEmail) == null)
     {
         var admin = new Admin(config["AdminSeed:FullName"] ?? "System Admin", adminEmail);
         var result = await userManager.CreateAsync(admin, config["AdminSeed:Password"]!);
         if (result.Succeeded)
             await userManager.AddToRoleAsync(admin, "Admin");
     }
-    
+
     await EmailTemplateSeeder.SeedDefaultTemplatesAsync(context);
-    
+
     if (app.Environment.IsDevelopment())
     {
         await DataSeeder.SeedFakeDataAsync(context, userManager);
@@ -131,7 +134,6 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    
 }
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();

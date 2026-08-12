@@ -7,6 +7,7 @@ using JobBoardPlatform.Infrastructure.Repositories;
 using JobBoardPlatform.Infrastructure.Services;
 using JobBoardPlatform.MVC.Filters;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add<MvcExceptionFilter>();
+    options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
 });
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -76,11 +78,13 @@ using (var scope = app.Services.CreateScope())
             await roleManager.CreateAsync(new IdentityRole<int>(role));
     }
 
-    var adminEmail = config["AdminSeed:Email"]!;
-    if (await userManager.FindByEmailAsync(adminEmail) == null)
+    var adminEmail = config["AdminSeed:Email"];
+    var adminPassword = config["AdminSeed:Password"];
+    if (!string.IsNullOrWhiteSpace(adminEmail) && !string.IsNullOrWhiteSpace(adminPassword)
+        && await userManager.FindByEmailAsync(adminEmail) == null)
     {
         var admin = new Admin(config["AdminSeed:FullName"] ?? "System Admin", adminEmail);
-        var result = await userManager.CreateAsync(admin, config["AdminSeed:Password"]!);
+        var result = await userManager.CreateAsync(admin, adminPassword);
         if (result.Succeeded)
             await userManager.AddToRoleAsync(admin, "Admin");
     }

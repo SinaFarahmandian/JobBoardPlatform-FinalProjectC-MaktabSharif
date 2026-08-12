@@ -1,4 +1,12 @@
-<div class="text-center mt-5">
-    <h2>دسترسی غیرمجاز</h2>
-    <p>شما اجازه‌ی دسترسی به این صفحه را ندارید.</p>
-</div>
+@{ ViewData["Title"] = "Access Denied"; }
+<section class="error-page">
+    <div class="error-card">
+        <span class="error-code"><i class="fas fa-lock"></i> Restricted Access</span>
+        <h1>This section is not available to your account role</h1>
+        <p>If you believe this is a mistake, sign in with the appropriate account or return to the home page.</p>
+        <div class="d-flex flex-wrap justify-content-center gap-2">
+            <a asp-controller="Public" asp-action="Index" class="btn btn-primary">Home Page</a>
+            <a asp-action="Login" class="btn btn-ghost">Use Another Account</a>
+        </div>
+    </div>
+</section>

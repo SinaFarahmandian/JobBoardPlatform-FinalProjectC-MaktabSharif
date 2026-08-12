@@ -21,6 +21,6 @@ public class AdminJobSeekersController : AdminControllerBase
     public async Task<IActionResult> SetStatus(int id, SetJobSeekerStatusDto dto)
     {
         await _service.SetActiveStatusAsync(id, dto.IsActive);
-        return Ok(new { message = "وضعیت کارجو به‌روزرسانی شد" });
+        return Ok(new { message = "The job seeker's status has been updated" });
     }
 }

@@ -26,7 +26,7 @@ public class EmployerJobPostingsController : Controller
     {
         if (!ModelState.IsValid) return View(dto);
         await _service.CreateAsync(EmployerId, dto);
-        TempData["Success"] = "آگهی ساخته شد";
+        TempData["Success"] = "The job posting has been created";
         return RedirectToAction(nameof(Index));
     }
 
@@ -34,6 +34,7 @@ public class EmployerJobPostingsController : Controller
     public async Task<IActionResult> Edit(int id)
     {
         var jp = await _service.GetByIdAsync(EmployerId, id);
+        ViewData["JobPostingId"] = id;
         return View(new UpdateJobPostingDto
         {
             Title = jp.Title, Description = jp.Description, Location = jp.Location,
@@ -45,9 +46,13 @@ public class EmployerJobPostingsController : Controller
     [HttpPost("{id}/edit")]
     public async Task<IActionResult> Edit(int id, UpdateJobPostingDto dto)
     {
-        if (!ModelState.IsValid) return View(dto);
+        if (!ModelState.IsValid)
+        {
+            ViewData["JobPostingId"] = id;
+            return View(dto);
+        }
         await _service.UpdateAsync(EmployerId, id, dto);
-        TempData["Success"] = "آگهی به‌روزرسانی شد";
+        TempData["Success"] = "The job posting has been updated";
         return RedirectToAction(nameof(Index));
     }
 
@@ -55,7 +60,7 @@ public class EmployerJobPostingsController : Controller
     public async Task<IActionResult> Delete(int id)
     {
         await _service.DeleteAsync(EmployerId, id);
-        TempData["Success"] = "آگهی حذف شد";
+        TempData["Success"] = "The job posting has been deleted";
         return RedirectToAction(nameof(Index));
     }
 
